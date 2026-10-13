@@ -68,10 +68,14 @@ def carousel_text(verses: Verses, service: str) -> str:
     return text
 
 
-def reel_text(verses: Verses, service: str) -> str:
+LISTEN = "🔊 தமிழ் · English · Deutsch"
+
+
+def reel_text(verses: Verses, service: str, narrated: bool = False) -> str:
     """Instagram / Facebook Reel: shorter, the verse is in the video."""
     website = CHURCH["website"] if service == "facebook" else CHURCH["website"].removeprefix("https://")
-    return "\n".join([*_header(verses), "", *_invitation(website), "", CREDITS, "", _hashtags(service)])
+    listen = [LISTEN] if narrated else []
+    return "\n".join([*_header(verses), *listen, "", *_invitation(website), "", CREDITS, "", _hashtags(service)])
 
 
 def youtube_title(verses: Verses) -> str:
@@ -82,9 +86,9 @@ def youtube_title(verses: Verses) -> str:
     return title
 
 
-def youtube_description(verses: Verses) -> str:
+def youtube_description(verses: Verses, narrated: bool = False) -> str:
     """All three verses (searchable on YouTube), the church's schedule and links."""
-    lines = ["இன்றைய வசனம் · Verse of the Day · Vers des Tages", ""]
+    lines = ["இன்றைய வசனம் · Verse of the Day · Vers des Tages", *([LISTEN] if narrated else []), ""]
     for lang in ORDER:
         lines += [verses[lang]["reference"] + TRANSLATION[lang], verses[lang]["text"], ""]
     lines += [f"{CHURCH['name']} · " + " · ".join(CHURCH["tagline"][lang] for lang in ORDER), ""]
@@ -106,7 +110,7 @@ def youtube_description(verses: Verses) -> str:
 
 def check() -> None:
     """Fail early if church.json is missing a language."""
-    for key in ("tagline", "invitation", "share"):
+    for key in ("tagline", "invitation", "share", "voices"):
         missing = set(ORDER) - set(CHURCH[key])
         if missing:
             raise ValueError(f"church.json {key} is missing {sorted(missing)}")

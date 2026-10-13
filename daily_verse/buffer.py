@@ -32,13 +32,18 @@ def carousel_metadata(service: str) -> dict[str, Any]:
     }[service]
 
 
-def video_metadata(service: str, title: str) -> dict[str, Any]:
-    """Settings for a Reel (Facebook, Instagram) or a YouTube Short."""
+def video_metadata(service: str, title: str, ai_voice: bool = False) -> dict[str, Any]:
+    """Settings for a Reel (Facebook, Instagram) or a YouTube Short.
+
+    A computer-generated reading voice is disclosed as AI-generated where
+    Buffer supports the label (Instagram, YouTube).
+    """
     return {
         "facebook": {"facebook": {"type": "reel"}},
-        "instagram": {"instagram": {"type": "reel", "shouldShareToFeed": True}},
+        "instagram": {"instagram": {"type": "reel", "shouldShareToFeed": True, "isAiGenerated": ai_voice}},
         # 22 = People & Blogs. Vertical videos under three minutes become Shorts.
-        "youtube": {"youtube": {"title": title, "categoryId": "22", "privacy": "public", "madeForKids": False}},
+        "youtube": {"youtube": {"title": title, "categoryId": "22", "privacy": "public", "madeForKids": False,
+                                "isAiGenerated": ai_voice}},
     }[service]
 
 

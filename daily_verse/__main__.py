@@ -3,6 +3,7 @@
     python -m daily_verse render [--start YYYY-MM-DD] [--days N] [--force]
     python -m daily_verse drafts [--start YYYY-MM-DD] [--days N]
     python -m daily_verse prune [--keep-days N]
+    python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR   (narrated test videos)
 
 Each day gets YYYY/MM/DD-{ta,en,de}.png (feed carousel), YYYY/MM/DD.mp4 (Reel
 and YouTube Short) and a DD.json manifest in $MEDIA_DIR (default ./images). The
@@ -24,7 +25,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, music, render, sources, video
+from . import buffer, captions, music, render, sources, speech, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -48,15 +49,28 @@ def days(start: date, count: int) -> list[date]:
     return [start + timedelta(days=i) for i in range(count)]
 
 
-def render_video(verses: dict[str, sources.Verse], day: date) -> str:
-    """Vertical slides, one per language, cross-faded into an MP4."""
+def narration_on() -> bool:
+    """Read-aloud is used once the church switches it on and Azure is configured."""
+    return os.environ.get("NARRATION", "").lower() == "on" and speech.enabled()
+
+
+def render_video(verses: dict[str, sources.Verse], day: date, out: Path, narrate: bool) -> bool:
+    """Vertical slides, one per language, cross-faded into an MP4; returns whether it is narrated."""
     with tempfile.TemporaryDirectory() as tmp:
-        slides = [render.render(verses[lang], day, Path(tmp) / f"{lang}.png", "video") for lang in ORDER]
-        seconds = [video.reading_seconds(verses[lang].text) for lang in ORDER]
-        length = sum(seconds) - video.FADE * (len(seconds) - 1)
-        track, _ = music.track_for(day, length, Path(tmp))
-        video.make_video(slides, seconds, IMAGES / video_name(day), music=track)
-    return video_name(day)
+        work = Path(tmp)
+        slides = [render.render(verses[lang], day, work / f"{lang}.png", "video") for lang in ORDER]
+        voice = None
+        if narrate:
+            readings = speech.narrate({lang: asdict(verses[lang]) for lang in ORDER}, day, work)
+            seconds, starts = video.narrated_timing([r.seconds for r in readings])
+            length = sum(seconds) - video.FADE * (len(seconds) - 1)
+            voice = speech.combine(readings, starts, length, work / "narration.wav")
+        else:
+            seconds = [video.reading_seconds(verses[lang].text) for lang in ORDER]
+            length = sum(seconds) - video.FADE * (len(seconds) - 1)
+        track, _ = music.track_for(day, length, work)
+        video.make_video(slides, seconds, out, music=track, narration=voice)
+    return voice is not None
 
 
 def cmd_render(args: argparse.Namespace) -> int:
@@ -80,7 +94,8 @@ def cmd_render(args: argparse.Namespace) -> int:
                 "buffer": (manifest or {}).get("buffer", {}),
             }
         if args.force or not (IMAGES / manifest.get("video", video_name(day))).exists():
-            manifest["video"] = render_video(verses, day)
+            manifest["narrated"] = render_video(verses, day, IMAGES / video_name(day), narration_on())
+            manifest["video"] = video_name(day)
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{day}: {verses['en'].reference}")
     return 0
@@ -141,10 +156,11 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             video_url = f"{base_url}/{manifest['video']}"
             clip = [{"video": {"url": video_url, "metadata": {"thumbnailOffset": 1000}}}]
             for channel_id, service in video_channels:
-                text = (captions.youtube_description(verses) if service == "youtube"
-                        else captions.reel_text(verses, service))
-                jobs.append((f"video:{channel_id}", channel_id, service, text, clip,
-                             buffer.video_metadata(service, captions.youtube_title(verses)), [video_url]))
+                narrated = manifest.get("narrated", False)
+                text = (captions.youtube_description(verses, narrated) if service == "youtube"
+                        else captions.reel_text(verses, service, narrated))
+                metadata = buffer.video_metadata(service, captions.youtube_title(verses), ai_voice=narrated)
+                jobs.append((f"video:{channel_id}", channel_id, service, text, clip, metadata, [video_url]))
 
         pending = [job for job in jobs if job[0] not in manifest["buffer"]]
         for url in dict.fromkeys(url for job in pending for url in job[6]):
@@ -179,16 +195,40 @@ def cmd_prune(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_preview(args: argparse.Namespace) -> int:
+    """Narrated videos in --out for listening, without touching the media branch or Buffer."""
+    if not speech.enabled():
+        print("Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION to preview narration", file=sys.stderr)
+        return 2
+    out_dir = Path(args.out)
+    for day in days(args.start, args.days):
+        path = manifest_path(day)
+        try:
+            verses = (
+                {lang: sources.Verse(**json.loads(path.read_text(encoding="utf-8"))["verses"][lang]) for lang in ORDER}
+                if path.exists() else sources.fetch_day(day)
+            )
+        except sources.SourceError as err:
+            print(f"{day}: skipped, {err}")
+            continue
+        out = out_dir / f"{day}.mp4"
+        render_video(verses, day, out, narrate=True)
+        print(f"{day}: {out} ({', '.join(speech.voices_for(day).values())})")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="daily_verse")
-    parser.add_argument("command", choices=["render", "drafts", "prune"])
+    parser.add_argument("command", choices=["render", "drafts", "prune", "preview"])
     parser.add_argument("--start", type=date.fromisoformat,
                         default=datetime.now(TIMEZONE).date() + timedelta(days=1))
     parser.add_argument("--days", type=int, default=3)
     parser.add_argument("--force", action="store_true", help="re-render days that already exist")
     parser.add_argument("--keep-days", type=int, default=30)
+    parser.add_argument("--out", default="preview", help="folder for preview videos")
     args = parser.parse_args()
-    return {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune}[args.command](args)
+    commands = {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune, "preview": cmd_preview}
+    return commands[args.command](args)
 
 
 if __name__ == "__main__":

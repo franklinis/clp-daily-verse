@@ -37,8 +37,37 @@
     "de": "Teile diesen Vers mit jemandem"
   },
   "hashtags": {
-    "instagram": ["#VerseOfTheDay", "#இன்றையவசனம்", "#Bibelvers", "#TamilChristian", "#München"],
-    "facebook": ["#VerseOfTheDay", "#இன்றையவசனம்", "#Bibelvers"],
-    "youtube": ["#இன்றையவசனம்", "#VerseOfTheDay", "#Bibelvers"]
-  }
+    "instagram": [
+      "#VerseOfTheDay",
+      "#இன்றையவசனம்",
+      "#Bibelvers",
+      "#TamilChristian",
+      "#München"
+    ],
+    "facebook": [
+      "#VerseOfTheDay",
+      "#இன்றையவசனம்",
+      "#Bibelvers"
+    ],
+    "youtube": [
+      "#இன்றையவசனம்",
+      "#VerseOfTheDay",
+      "#Bibelvers"
+    ]
+  },
+  "voices": {
+    "ta": {
+      "female": "ta-IN-PallaviNeural",
+      "male": "ta-IN-ValluvarNeural"
+    },
+    "en": {
+      "female": "en-GB-SoniaNeural",
+      "male": "en-GB-RyanNeural"
+    },
+    "de": {
+      "female": "de-DE-KatjaNeural",
+      "male": "de-DE-ConradNeural"
+    }
+  },
+  "speaking_rate": "-8%"
 }

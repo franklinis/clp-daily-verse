@@ -32,6 +32,14 @@ By default each video gets an original instrumental composed in code (`daily_ver
 
 To use specific tracks instead, add audio files (mp3, m4a or wav) to `assets/music/`; the videos rotate through them by date, looping short tracks. Only add music the church is licensed to use on Facebook, Instagram and YouTube, and if a licence requires credit, add it to the captions in `church.json`.
 
+## Read-aloud
+
+Videos can read each slide aloud: the reference, then the verse, in a calm neural voice from [Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/). Female and male voices alternate between languages and swap every day; the music dips under the voice. Narrated Reels and Shorts are marked AI-generated on Instagram and YouTube.
+
+Voices and the speaking rate are in `church.json` (`voices`, `speaking_rate`); for example, use `ta-LK-SaranyaNeural` / `ta-LK-KumarNeural` for a Sri Lankan Tamil accent.
+
+To set it up: create a free (F0) **Speech** resource in Azure, then add the secret `AZURE_SPEECH_KEY` (Key 1) and the variable `AZURE_SPEECH_REGION` (its location, e.g. `westeurope`). Run **Actions → Preview narration** to listen first; the videos appear as a download on the run page. When happy, add the variable `NARRATION` = `on` and new videos are narrated from the next morning.
+
 ## How it works
 
 1. `.github/workflows/daily.yml` runs every day at 05:15 (CET).

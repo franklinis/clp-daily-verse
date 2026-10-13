@@ -50,6 +50,11 @@ jobs:
           fi
 
       - name: Render slides
+        env:
+          # Read-aloud starts once NARRATION is "on" and the Azure key is set.
+          NARRATION: ${{ vars.NARRATION }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ vars.AZURE_SPEECH_REGION }}
         run: python -m daily_verse render ${START:+--start "$START"} --days "$DAYS"
 
       - name: Publish slides
