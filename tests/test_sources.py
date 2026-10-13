@@ -1,6 +1,6 @@
 """Parsing tests against small hand-written pages shaped like the real sites."""
 
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 
@@ -135,8 +135,56 @@ def test_background_is_stable_per_day_and_varies_between_days() -> None:
     assert background.svg(DAY) != background.svg(date(2026, 10, 16))
 
 
-def test_sunday_keeps_the_church_green() -> None:
+@pytest.mark.parametrize(
+    ("year", "expected"),
+    [(2024, date(2024, 3, 31)), (2025, date(2025, 4, 20)), (2026, date(2026, 4, 5)), (2027, date(2027, 3, 28))],
+)
+def test_easter(year: int, expected: date) -> None:
     from daily_verse import background
 
-    assert background.palette_for(date(2026, 10, 18)).name == "petra"
-    assert len({background.palette_for(date(2026, 10, 12 + i)).name for i in range(7)}) == 7
+    assert background.easter(year) == expected
+
+
+@pytest.mark.parametrize(
+    ("day", "name"),
+    [
+        (date(2026, 12, 25), "christmas"),
+        (date(2027, 1, 1), "new year"),
+        (date(2026, 4, 3), "good friday"),
+        (date(2026, 4, 5), "easter"),
+        (date(2026, 5, 24), "pentecost"),
+        (date(2026, 10, 15), None),
+    ],
+)
+def test_feast_days(day: date, name: str | None) -> None:
+    from daily_verse import background
+
+    assert background.feast(day) == name
+    if name:
+        assert background.palette_for(day).name == name
+
+
+def test_a_year_of_palettes() -> None:
+    """Sundays stay green, every weekday palette gets used, and no palette repeats on consecutive days."""
+    from daily_verse import background
+
+    year = [date(2027, 1, 1) + timedelta(days=i) for i in range(365)]
+    palettes = [background.palette_for(day) for day in year]
+    for day, palette in zip(year, palettes, strict=True):
+        if day.weekday() == 6 and not background.feast(day):
+            assert palette in background.SUNDAY
+    for (day, a), b in zip(zip(year, palettes, strict=True), palettes[1:], strict=False):
+        if not (background.feast(day) and a.name in background.FEAST):
+            assert a != b, f"{day}: {a.name} two days running"
+    used = {p.name for p in palettes}
+    assert {p.name for p in background.WEEKDAY} <= used
+
+
+def test_every_palette_keeps_white_text_readable() -> None:
+    """WCAG large-text contrast (3:1) against the ridges and sky, before any darkening."""
+    from daily_verse import background
+
+    for palette in background.PALETTES:
+        for colour in (palette.far, *palette.sky):
+            contrast = 1.05 / (background.luminance(colour) + 0.05)
+            assert contrast >= 3.0, f"{palette.name} {colour}: {contrast:.2f}"

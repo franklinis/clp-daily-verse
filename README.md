@@ -12,7 +12,14 @@ DailyVerses.net chooses the verse. The English and German texts come from its pa
 
 ## Design
 
-Each slide has a generated misty-mountain background, like the artwork on christ-livingpetra.de. The ridgelines are different every day, and the colours follow the day of the week: dawn blue (Mon), earth (Tue), teal (Wed), dusk (Thu), gold (Fri), slate (Sat) and the church's green (Sun). Palettes live in `daily_verse/background.py`; the layout is `daily_verse/template.html`.
+Each slide has a generated misty-mountain background, like the artwork on christ-livingpetra.de, and no two days look the same:
+
+- **39 palettes**: 30 for weekdays (blues, purples, warm earth and gold tones, teal, neutrals and starry nights), 4 church greens that rotate on Sundays, and 5 for feast days: Christmas (24–26 Dec, with a star), New Year, Good Friday, Easter and Pentecost (dates calculated every year).
+- Weekday palettes are shuffled each year and never repeat on consecutive days.
+- Every day also varies the sky gradient and its angle, the sun or moon position and size, light rays, fog bands, and the mountain style (rolling, layered or alpine) and number of ridges.
+- Re-rendering a date always gives the same picture, and a test checks that every palette keeps white text readable (WCAG 3:1 for large text).
+
+Palettes live in `daily_verse/background.py`; the slide layout is `daily_verse/template.html`.
 
 ## How it works
 

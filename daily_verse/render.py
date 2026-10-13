@@ -90,7 +90,7 @@ def build_html(verse: Verse, day: date) -> str:
     return TEMPLATE.substitute(
         lang=verse.lang,
         background=background.svg(day),
-        sky_top=palette.sky_top,
+        sky_top=palette.sky[0],
         accent=palette.accent,
         quote=palette.quote,
         sans=cfg["sans"],
