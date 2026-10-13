@@ -3,7 +3,7 @@
 Every morning this repository prepares the day's Bible verse in **Tamil, English and German** for Christ the Living Petra Church and saves it as **drafts in Buffer**:
 
 - a three-slide **carousel** (1080×1350) for the Facebook page and Instagram feed, and
-- a 15–25 second vertical **video** (1080×1920) for an Instagram Reel, a Facebook Reel and a YouTube Short. Each language holds long enough to read, zooms slowly, and cross-fades into the next; the audio track is silent, so there is no music licensing to worry about.
+- a 15–25 second vertical **video** (1080×1920) for an Instagram Reel, a Facebook Reel and a YouTube Short. Each language holds long enough to read, zooms slowly, and cross-fades into the next, over soft background music.
 
 Someone from the church reviews each draft in Buffer and approves it; nothing is published automatically.
 
@@ -25,6 +25,12 @@ Each slide has a generated misty-mountain background, like the artwork on christ
 - Re-rendering a date always gives the same picture, and a test checks that every palette keeps white text readable (WCAG 3:1 for large text).
 
 Palettes live in `daily_verse/background.py`; the slide layout is `daily_verse/template.html`.
+
+## Music
+
+By default each video gets an original instrumental composed in code (`daily_verse/music.py`): soft chords and sparse piano-like notes in a key and progression chosen per date. The church owns it outright, so YouTube's and Meta's copyright matching can never claim or mute a post, which does happen with "royalty-free" library tracks.
+
+To use specific tracks instead, add audio files (mp3, m4a or wav) to `assets/music/`; the videos rotate through them by date, looping short tracks. Only add music the church is licensed to use on Facebook, Instagram and YouTube, and if a licence requires credit, add it to the captions in `church.json`.
 
 ## How it works
 
@@ -61,7 +67,7 @@ Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule
 
 Without the API key the workflow still renders and publishes everything, but creates no drafts.
 
-Buffer's free plan allows 10 scheduled posts at a time across the organization. With the carousel on two channels and the video on three, each day has five drafts, so approve one day at a time rather than a whole week in advance.
+Buffer's free plan allows 10 scheduled posts **per channel at a time**; a slot frees up as soon as a post publishes, so there is no monthly limit. Facebook and Instagram each get two posts a day (carousel and Reel) and YouTube one, so drafts can be approved up to five days ahead.
 
 ## Run locally
 

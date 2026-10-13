@@ -36,3 +36,11 @@ def test_make_video(tmp_path: Path) -> None:
     out = video.make_video(slides, [2.0, 2.0, 2.0], tmp_path / "out.mp4", size=(108, 192))
     frames, seconds = imageio_ffmpeg.count_frames_and_secs(str(out))
     assert seconds == pytest.approx(6.0 - 2 * video.FADE, abs=0.1)
+
+
+def test_music_is_looped_levelled_and_faded() -> None:
+    cmd = video.build_command([Path("a.png"), Path("b.png")], [6.0, 6.0], Path("o.mp4"), (1080, 1920), Path("m.wav"))
+    assert cmd[cmd.index("m.wav") - 3 : cmd.index("m.wav")] == ["-stream_loop", "-1", "-i"]
+    graph = cmd[cmd.index("-filter_complex") + 1]
+    assert "loudnorm=I=-18" in graph and "afade=t=out:st=8.70:d=2.5" in graph
+    assert cmd[cmd.index("-map", cmd.index("-map") + 1) + 1] == "[aout]"

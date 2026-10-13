@@ -24,7 +24,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, render, sources, video
+from . import buffer, captions, music, render, sources, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -53,7 +53,9 @@ def render_video(verses: dict[str, sources.Verse], day: date) -> str:
     with tempfile.TemporaryDirectory() as tmp:
         slides = [render.render(verses[lang], day, Path(tmp) / f"{lang}.png", "video") for lang in ORDER]
         seconds = [video.reading_seconds(verses[lang].text) for lang in ORDER]
-        video.make_video(slides, seconds, IMAGES / video_name(day))
+        length = sum(seconds) - video.FADE * (len(seconds) - 1)
+        track, _ = music.track_for(day, length, Path(tmp))
+        video.make_video(slides, seconds, IMAGES / video_name(day), music=track)
     return video_name(day)
 
 
