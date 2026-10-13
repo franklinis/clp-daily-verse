@@ -35,6 +35,16 @@ Palettes live in `daily_verse/background.py`; the slide layout is `daily_verse/t
 
 Re-running is safe: each day's `DD.json` on the `media` branch records the drafts already created.
 
+## Captions and church details
+
+Each platform gets its own text, in Tamil, English and German:
+
+- **Feed carousel** (Instagram, Facebook): the verse in all three languages, the service invitation, address and website, credits and hashtags.
+- **Reels**: the same without the verse text, which is in the video.
+- **YouTube Short**: a Tamil-first title, and a description with all three verses, the full weekly schedule and links.
+
+Service times, address, links, invitation wording and hashtags live in [`church.json`](church.json). Edit that file (GitHub's web editor is fine) to change them; for example, add a German service to `schedule` and update `invitation` when German services start. Every entry needs `ta`, `en` and `de`.
+
 ## Reviewing drafts
 
 Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule** (keeps the 07:00 time) or edit the time first. Delete a draft to skip a day.

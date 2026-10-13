@@ -5,7 +5,6 @@ from datetime import date, timedelta
 import pytest
 
 from daily_verse import sources
-from daily_verse.__main__ import caption
 from daily_verse.render import build_html
 
 DAY = date(2026, 10, 15)
@@ -117,15 +116,6 @@ def test_slide_escapes_verse_text() -> None:
     assert "<script>alert(1)</script>" not in page
     assert "&lt;script&gt;" in page
     assert "Thursday, 15 October 2026" in page
-
-
-def test_caption_lists_all_three_references() -> None:
-    verses = {
-        "ta": {"reference": "யோவான் 4:14"},
-        "en": {"reference": "John 4:14"},
-        "de": {"reference": "Johannes 4,14"},
-    }
-    assert "யோவான் 4:14 · John 4:14 · Johannes 4,14" in caption(verses)
 
 
 def test_background_is_stable_per_day_and_varies_between_days() -> None:

@@ -1,0 +1,44 @@
+{
+  "name": "Christ the Living Petra Church",
+  "tagline": {
+    "ta": "மியூனிக் தமிழ் சபை",
+    "en": "Tamil church in Munich",
+    "de": "Tamilische Gemeinde in München"
+  },
+  "website": "https://christ-livingpetra.de",
+  "facebook": "https://www.facebook.com/christthelivingpetrachurch/",
+  "instagram": "https://www.instagram.com/christthelivingpetra/",
+  "address": "Alpenveilchenstraße 45, 80689 München",
+  "invitation": {
+    "ta": "ஞாயிறு ஆராதனை காலை 9:00",
+    "en": "Sunday worship 9:00 AM",
+    "de": "Gottesdienst sonntags 9:00 Uhr (auf Tamil)"
+  },
+  "schedule": [
+    {
+      "ta": "ஞாயிறு ஆராதனை (தமிழ்) · காலை 9:00",
+      "en": "Sunday worship (Tamil) · 9:00 AM",
+      "de": "Gottesdienst (Tamil) · sonntags 9:00 Uhr"
+    },
+    {
+      "ta": "ஞாயிறு பள்ளி (தமிழ் & ஆங்கிலம்) · காலை 9:45",
+      "en": "Sunday School (Tamil & English) · 9:45 AM",
+      "de": "Kindergottesdienst (Tamil & Englisch) · sonntags 9:45 Uhr"
+    },
+    {
+      "ta": "குடும்ப ஜெபம் (ஆன்லைன்) · புதன்கிழமை காலை 10:00",
+      "en": "Family Prayer (online) · Wednesday 10:00 AM",
+      "de": "Familiengebet (online) · mittwochs 10:00 Uhr"
+    }
+  ],
+  "share": {
+    "ta": "இந்த வசனத்தை மற்றவர்களுடன் பகிர்ந்துகொள்ளுங்கள்",
+    "en": "Share this verse with someone today",
+    "de": "Teile diesen Vers mit jemandem"
+  },
+  "hashtags": {
+    "instagram": ["#VerseOfTheDay", "#இன்றையவசனம்", "#Bibelvers", "#TamilChristian", "#München"],
+    "facebook": ["#VerseOfTheDay", "#இன்றையவசனம்", "#Bibelvers"],
+    "youtube": ["#இன்றையவசனம்", "#VerseOfTheDay", "#Bibelvers"]
+  }
+}

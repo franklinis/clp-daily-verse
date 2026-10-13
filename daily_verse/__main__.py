@@ -24,7 +24,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, render, sources, video
+from . import buffer, captions, render, sources, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -42,22 +42,6 @@ def image_name(day: date, lang: str) -> str:
 
 def video_name(day: date) -> str:
     return f"{day:%Y/%m/%d}.mp4"
-
-
-def caption(verses: dict[str, dict[str, str]], carousel: bool = True) -> str:
-    """Post text: references in all three languages plus credits."""
-    refs = " · ".join(verses[lang]["reference"] for lang in ORDER)
-    return "\n".join([
-        "இன்றைய வசனம் · Verse of the Day · Vers des Tages",
-        "",
-        refs,
-        "",
-        *(["தமிழ் · English · Deutsch ➜", ""] if carousel else []),
-        "Bible texts: tamil-bible.com · King James Version · Lutherbibel 1912",
-        "Verse selection: DailyVerses.net",
-        "",
-        "#ChristTheLivingPetra #VerseOfTheDay #VersDesTages #TamilChurch #München",
-    ])
 
 
 def days(start: date, count: int) -> list[date]:
@@ -116,11 +100,8 @@ def _channels(variable: str) -> list[tuple[str, str]]:
     return [tuple(c.split(":", 1)) for c in os.environ.get(variable, "").split(",") if c]  # type: ignore[misc]
 
 
-def youtube_title(verses: dict[str, dict[str, str]]) -> str:
-    return f"Verse of the Day · {verses['en']['reference']} · இன்றைய வசனம் #Shorts"
-
-
 def cmd_drafts(args: argparse.Namespace) -> int:
+    captions.check()
     api_key = os.environ.get("BUFFER_API_KEY")
     carousel_channels = _channels("BUFFER_CHANNELS")
     video_channels = _channels("BUFFER_VIDEO_CHANNELS")
@@ -152,14 +133,16 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             for url, lang in zip(image_urls, ORDER, strict=True)
         ]
         for channel_id, service in carousel_channels:
-            jobs.append((channel_id, channel_id, service, caption(verses), images,
+            jobs.append((channel_id, channel_id, service, captions.carousel_text(verses, service), images,
                          buffer.carousel_metadata(service), image_urls))
         if manifest.get("video"):
             video_url = f"{base_url}/{manifest['video']}"
             clip = [{"video": {"url": video_url, "metadata": {"thumbnailOffset": 1000}}}]
             for channel_id, service in video_channels:
-                jobs.append((f"video:{channel_id}", channel_id, service, caption(verses, carousel=False), clip,
-                             buffer.video_metadata(service, youtube_title(verses)), [video_url]))
+                text = (captions.youtube_description(verses) if service == "youtube"
+                        else captions.reel_text(verses, service))
+                jobs.append((f"video:{channel_id}", channel_id, service, text, clip,
+                             buffer.video_metadata(service, captions.youtube_title(verses)), [video_url]))
 
         pending = [job for job in jobs if job[0] not in manifest["buffer"]]
         for url in dict.fromkeys(url for job in pending for url in job[6]):
