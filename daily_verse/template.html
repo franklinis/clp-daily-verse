@@ -3,34 +3,34 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;1,400&family=Noto+Serif+Tamil:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&family=Roboto:wght@400;500&display=block" rel="stylesheet">
 <style>
-  :root { --green:#205b4f; --deep:#173f37; --teal:#53a292; --sand:#cba590; --mist:#d9e8e5; }
+  :root { --accent:$accent; --quote:$quote; --mist:#e6efed; }
   * { box-sizing:border-box; margin:0; }
   html, body { width:1080px; height:1350px; overflow:hidden; }
   body {
-    background: radial-gradient(120% 80% at 50% 0%, #2a6f60 0%, var(--green) 45%, var(--deep) 100%);
+    background:$sky_top;
     color:#fff; font-family:$sans;
     display:flex; flex-direction:column; align-items:center; padding:84px 96px 64px;
     position:relative;
   }
-  .frame { position:absolute; inset:36px; border:2px solid rgba(203,165,144,.45); border-radius:28px; pointer-events:none; }
-  .mountains { position:absolute; left:0; right:0; bottom:0; width:100%; height:300px; opacity:.08; }
+  .bg { position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+  .frame { position:absolute; inset:36px; border:2px solid var(--accent); opacity:.5; border-radius:28px; pointer-events:none; z-index:1; }
+  .logo, .label, .date, .rule, .verse, .credit, .church { position:relative; z-index:1; }
+  .label, .date, .text, .ref, .credit, .church { text-shadow:0 2px 14px rgba(0,0,0,.4); }
   .logo { width:170px; height:170px; }
-  .label { margin-top:30px; color:var(--sand); font-size:30px; font-weight:500; letter-spacing:$label_spacing; text-transform:uppercase; }
+  .label { margin-top:30px; color:var(--accent); font-size:30px; font-weight:500; letter-spacing:$label_spacing; text-transform:uppercase; }
   .date { margin-top:10px; color:var(--mist); font-size:26px; opacity:.85; }
-  .rule { width:120px; height:2px; background:var(--sand); opacity:.7; margin:40px 0 0; }
+  .rule { width:120px; height:2px; background:var(--accent); opacity:.8; margin:40px 0 0; }
   .verse { flex:1; width:100%; display:flex; flex-direction:column; justify-content:center; text-align:center; overflow:hidden; padding:24px 0; }
   .text { font-family:$serif; font-size:${size}px; line-height:$line_height; font-weight:400; }
-  .q { color:var(--teal); }
-  .ref { margin-top:36px; color:var(--sand); font-size:36px; font-weight:500; letter-spacing:.04em; }
+  .q { color:var(--quote); }
+  .ref { margin-top:36px; color:var(--accent); font-size:36px; font-weight:500; letter-spacing:.04em; }
   .credit { color:var(--mist); opacity:.7; font-size:19px; text-align:center; max-width:820px; line-height:1.4; }
   .church { margin-top:14px; color:#fff; font-family:'Roboto', sans-serif; font-size:24px; letter-spacing:.06em; opacity:.95; }
-  .church span { color:var(--sand); }
+  .church span { color:var(--accent); }
 </style></head>
 <body>
   <div class="frame"></div>
-  <svg class="mountains" viewBox="0 0 1080 300" preserveAspectRatio="none" aria-hidden="true">
-    <path fill="#fff" d="M0 300 L0 210 L140 130 L230 190 L360 70 L470 170 L560 110 L650 180 L780 40 L900 160 L980 120 L1080 190 L1080 300 Z"/>
-  </svg>
+  $background
   <img class="logo" src="$logo" alt="">
   <div class="label">$label</div>
   <div class="date">$date</div>

@@ -126,3 +126,17 @@ def test_caption_lists_all_three_references() -> None:
         "de": {"reference": "Johannes 4,14"},
     }
     assert "யோவான் 4:14 · John 4:14 · Johannes 4,14" in caption(verses)
+
+
+def test_background_is_stable_per_day_and_varies_between_days() -> None:
+    from daily_verse import background
+
+    assert background.svg(DAY) == background.svg(DAY)
+    assert background.svg(DAY) != background.svg(date(2026, 10, 16))
+
+
+def test_sunday_keeps_the_church_green() -> None:
+    from daily_verse import background
+
+    assert background.palette_for(date(2026, 10, 18)).name == "petra"
+    assert len({background.palette_for(date(2026, 10, 12 + i)).name for i in range(7)}) == 7

@@ -15,6 +15,7 @@ from string import Template
 import subprocess
 import tempfile
 
+from . import background
 from .sources import Verse
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -85,8 +86,13 @@ def find_chrome() -> str:
 def build_html(verse: Verse, day: date) -> str:
     """Fill the slide template for one language."""
     cfg = LANGUAGES[verse.lang]
+    palette = background.palette_for(day)
     return TEMPLATE.substitute(
         lang=verse.lang,
+        background=background.svg(day),
+        sky_top=palette.sky_top,
+        accent=palette.accent,
+        quote=palette.quote,
         sans=cfg["sans"],
         serif=cfg["serif"],
         size=cfg["size"],

@@ -10,6 +10,10 @@ Every morning this repository prepares a three-slide carousel of the day's Bible
 
 DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Every slide credits its translation, and each post's caption credits both sites.
 
+## Design
+
+Each slide has a generated misty-mountain background, like the artwork on christ-livingpetra.de. The ridgelines are different every day, and the colours follow the day of the week: dawn blue (Mon), earth (Tue), teal (Wed), dusk (Thu), gold (Fri), slate (Sat) and the church's green (Sun). Palettes live in `daily_verse/background.py`; the layout is `daily_verse/template.html`.
+
 ## How it works
 
 1. `.github/workflows/daily.yml` runs every day at 05:15 (CET).
