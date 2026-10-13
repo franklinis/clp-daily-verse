@@ -68,7 +68,8 @@ def render_language_video(verse: sources.Verse, day: date, out: Path, narrate: b
             voice = speech.combine([reading], starts, seconds[0], work / "narration.wav")
             times = [(starts[0] + a, starts[0] + b) for a, b in speech.word_times(reading, verse.text)]
             print(f"{day} {verse.lang}: {reading.voice}, {reading.seconds:.1f}s, "
-                  f"{len(reading.words)} spoken words timed for {len(times)} on screen")
+                  f"{speech.LAST_MATCHED}/{len(times)} words on screen timed by Azure "
+                  f"(first at {times[0][0]:.2f}s, last ends {times[-1][1]:.2f}s)")
             timeline = video.highlight_timeline(looks, times, seconds[0], work / "frames")
         else:
             slide = render.render(verse, day, work / f"{verse.lang}.png", "video")

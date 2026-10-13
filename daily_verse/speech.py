@@ -27,6 +27,7 @@ LOCALES = {"ta": "ta-IN", "en": "en-GB", "de": "de-DE"}
 OUTPUT_FORMAT = "riff-24khz-16bit-mono-pcm"
 GERMAN_ORDINALS = {"1": "Erster", "2": "Zweiter", "3": "Dritter"}
 MOSE = {"1": "Erstes", "2": "Zweites", "3": "Drittes", "4": "Viertes", "5": "Fünftes"}
+LAST_MATCHED = 0  # how many on-screen words the last word_times() call matched to Azure timings (for logs)
 _REFERENCE = re.compile(r"^(?P<book>.+?)\s+(?P<chapter>\d+)[:,](?P<first>\d+)(?:-(?P<last>\d+))?$")
 
 
@@ -193,7 +194,9 @@ def word_times(reading: Narration, text: str) -> list[tuple[float, float]]:
                     times[k] = (word.start, word.end) if current is None else (current[0], max(current[1], word.end))
                     break
 
-    if sum(t is not None for t in times) * 2 < len(display):
+    global LAST_MATCHED
+    LAST_MATCHED = sum(t is not None for t in times)
+    if len(display) > LAST_MATCHED * 2:
         # Too few matches: estimate where the verse starts from the reference's share of the text.
         spoken = re.search(r"<prosody[^>]*>(.*?)<break", reading.document)
         reference = len(spoken[1]) if spoken else 20
