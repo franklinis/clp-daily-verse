@@ -14,7 +14,7 @@ re-running never duplicates work.
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timedelta
 import json
 import os
@@ -41,10 +41,6 @@ def image_name(day: date, lang: str) -> str:
     return f"{day:%Y/%m/%d}-{lang}.png"
 
 
-def video_name(day: date) -> str:
-    return f"{day:%Y/%m/%d}.mp4"
-
-
 def days(start: date, count: int) -> list[date]:
     return [start + timedelta(days=i) for i in range(count)]
 
@@ -54,22 +50,24 @@ def narration_on() -> bool:
     return os.environ.get("NARRATION", "").lower() == "on" and speech.enabled()
 
 
-def render_video(verses: dict[str, sources.Verse], day: date, out: Path, narrate: bool) -> bool:
-    """Vertical slides, one per language, cross-faded into an MP4; returns whether it is narrated."""
+def language_video_name(day: date, lang: str) -> str:
+    return f"{day:%Y/%m/%d}-{lang}.mp4"
+
+
+def render_language_video(verse: sources.Verse, day: date, out: Path, narrate: bool) -> bool:
+    """One vertical slide with music (and the reading, if narrated); returns whether it is narrated."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
-        slides = [render.render(verses[lang], day, work / f"{lang}.png", "video") for lang in ORDER]
+        slide = render.render(verse, day, work / f"{verse.lang}.png", "video")
         voice = None
         if narrate:
-            readings = speech.narrate({lang: asdict(verses[lang]) for lang in ORDER}, day, work)
-            seconds, starts = video.narrated_timing([r.seconds for r in readings])
-            length = sum(seconds) - video.FADE * (len(seconds) - 1)
-            voice = speech.combine(readings, starts, length, work / "narration.wav")
+            reading = speech.narrate_one(verse.lang, asdict(verse), day, work)
+            seconds, starts = video.narrated_timing([reading.seconds])
+            voice = speech.combine([reading], starts, seconds[0], work / "narration.wav")
         else:
-            seconds = [video.reading_seconds(verses[lang].text) for lang in ORDER]
-            length = sum(seconds) - video.FADE * (len(seconds) - 1)
-        track, _ = music.track_for(day, length, work)
-        video.make_video(slides, seconds, out, music=track, narration=voice)
+            seconds = [video.reading_seconds(verse.text) + 1.5]
+        track, _ = music.track_for(day, seconds[0], work)
+        video.make_video([slide], seconds, out, music=track, narration=voice)
     return voice is not None
 
 
@@ -93,9 +91,17 @@ def cmd_render(args: argparse.Namespace) -> int:
                 "images": {lang: image_name(day, lang) for lang in ORDER},
                 "buffer": (manifest or {}).get("buffer", {}),
             }
-        if args.force or not (IMAGES / manifest.get("video", video_name(day))).exists():
-            manifest["narrated"] = render_video(verses, day, IMAGES / video_name(day), narration_on())
-            manifest["video"] = video_name(day)
+        # Days from before per-language videos keep their trilingual video and drafts.
+        videos = manifest.get("videos", {})
+        if "video" not in manifest and (
+            args.force or set(videos) != set(ORDER) or not all((IMAGES / v).exists() for v in videos.values())
+        ):
+            narrate = narration_on()
+            manifest["videos"] = {}
+            for lang in ORDER:
+                render_language_video(verses[lang], day, IMAGES / language_video_name(day, lang), narrate)
+                manifest["videos"][lang] = language_video_name(day, lang)
+            manifest["narrated"] = narrate
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{day}: {verses['en'].reference}")
     return 0
@@ -115,6 +121,45 @@ def wait_until_public(url: str, attempts: int = 10) -> None:
 def _channels(variable: str) -> list[tuple[str, str]]:
     """Parse "id:service,id:service" from an environment variable."""
     return [tuple(c.split(":", 1)) for c in os.environ.get(variable, "").split(",") if c]  # type: ignore[misc]
+
+
+@dataclass(frozen=True)
+class Job:
+    """One Buffer draft to create; `key` records it in the day's manifest."""
+
+    key: str
+    channel_id: str
+    service: str
+    kind: str
+    text: str
+    assets: list
+    metadata: dict
+    urls: list
+
+
+def draft_jobs(manifest: dict, base_url: str, carousel_channels: list, video_channels: list) -> list[Job]:
+    """Every draft a day needs: the carousel per feed channel, and each language's video per video channel."""
+    verses = manifest["verses"]
+    jobs = []
+    image_urls = [f"{base_url}/{manifest['images'][lang]}" for lang in ORDER]
+    images = [
+        {"image": {"url": url, "metadata": {"altText": f"{verses[lang]['reference']}: {verses[lang]['text']}"}}}
+        for url, lang in zip(image_urls, ORDER, strict=True)
+    ]
+    for channel_id, service in carousel_channels:
+        jobs.append(Job(channel_id, channel_id, service, "carousel", captions.carousel_text(verses, service),
+                        images, buffer.carousel_metadata(service), image_urls))
+    narrated = manifest.get("narrated", False)
+    for lang, name in manifest.get("videos", {}).items():
+        url = f"{base_url}/{name}"
+        clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
+        for channel_id, service in video_channels:
+            text = (captions.language_youtube_description(verses, lang) if service == "youtube"
+                    else captions.language_reel_text(verses, lang, service))
+            metadata = buffer.video_metadata(service, captions.language_youtube_title(verses, lang), ai_voice=narrated)
+            jobs.append(Job(f"video-{lang}:{channel_id}", channel_id, service, f"{lang} video", text, clip,
+                            metadata, [url]))
+    return jobs
 
 
 def cmd_drafts(args: argparse.Namespace) -> int:
@@ -139,42 +184,22 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             print(f"{day}: no slides yet, run render first")
             continue
         manifest = json.loads(path.read_text(encoding="utf-8"))
-        verses = manifest["verses"]
         due_at = datetime.combine(day, post_time, TIMEZONE)
-
-        # (manifest key, channel, service, text, assets, metadata, urls that must be live)
-        jobs = []
-        image_urls = [f"{base_url}/{manifest['images'][lang]}" for lang in ORDER]
-        images = [
-            {"image": {"url": url, "metadata": {"altText": f"{verses[lang]['reference']}: {verses[lang]['text']}"}}}
-            for url, lang in zip(image_urls, ORDER, strict=True)
+        pending = [
+            job for job in draft_jobs(manifest, base_url, carousel_channels, video_channels)
+            if job.key not in manifest["buffer"]
         ]
-        for channel_id, service in carousel_channels:
-            jobs.append((channel_id, channel_id, service, captions.carousel_text(verses, service), images,
-                         buffer.carousel_metadata(service), image_urls))
-        if manifest.get("video"):
-            video_url = f"{base_url}/{manifest['video']}"
-            clip = [{"video": {"url": video_url, "metadata": {"thumbnailOffset": 1000}}}]
-            for channel_id, service in video_channels:
-                narrated = manifest.get("narrated", False)
-                text = (captions.youtube_description(verses, narrated) if service == "youtube"
-                        else captions.reel_text(verses, service, narrated))
-                metadata = buffer.video_metadata(service, captions.youtube_title(verses), ai_voice=narrated)
-                jobs.append((f"video:{channel_id}", channel_id, service, text, clip, metadata, [video_url]))
-
-        pending = [job for job in jobs if job[0] not in manifest["buffer"]]
-        for url in dict.fromkeys(url for job in pending for url in job[6]):
+        for url in dict.fromkeys(url for job in pending for url in job.urls):
             wait_until_public(url)
-        for key, channel_id, service, text, assets, metadata, _ in pending:
-            kind = "reel" if key.startswith("video:") else "carousel"
+        for job in pending:
             try:
-                post_id = buffer.create_draft(api_key, channel_id, text, assets, metadata, due_at)
+                post_id = buffer.create_draft(api_key, job.channel_id, job.text, job.assets, job.metadata, due_at)
             except buffer.BufferError as err:
-                print(f"{day} {service} {kind}: {err}", file=sys.stderr)
+                print(f"{day} {job.service} {job.kind}: {err}", file=sys.stderr)
                 failed = True
                 continue
-            manifest["buffer"][key] = post_id
-            print(f"{day} {service} {kind}: draft {post_id}")
+            manifest["buffer"][job.key] = post_id
+            print(f"{day} {job.service} {job.kind}: draft {post_id}")
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 1 if failed else 0
 
@@ -211,9 +236,10 @@ def cmd_preview(args: argparse.Namespace) -> int:
         except sources.SourceError as err:
             print(f"{day}: skipped, {err}")
             continue
-        out = out_dir / f"{day}.mp4"
-        render_video(verses, day, out, narrate=True)
-        print(f"{day}: {out} ({', '.join(speech.voices_for(day).values())})")
+        for lang in ORDER:
+            out = out_dir / f"{day}-{lang}.mp4"
+            render_language_video(verses[lang], day, out, narrate=True)
+            print(f"{day}: {out} ({speech.voices_for(day)[lang]})")
     return 0
 
 

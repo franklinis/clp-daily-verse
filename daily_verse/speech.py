@@ -115,16 +115,16 @@ def wav_seconds(path: Path) -> float:
         return wav.getnframes() / wav.getframerate()
 
 
+def narrate_one(lang: str, verse: dict[str, str], day: date, workdir: Path) -> Narration:
+    """The reference and verse read aloud in one language, as a WAV."""
+    voice = voices_for(day)[lang]
+    path = synthesize(ssml(lang, voice, verse["reference"], verse["text"]), workdir / f"voice-{lang}.wav")
+    return Narration(lang, voice, path, wav_seconds(path))
+
+
 def narrate(verses: dict[str, dict[str, str]], day: date, workdir: Path) -> list[Narration]:
     """One WAV per language, in slide order."""
-    voices = voices_for(day)
-    readings = []
-    for lang in ORDER:
-        path = synthesize(
-            ssml(lang, voices[lang], verses[lang]["reference"], verses[lang]["text"]), workdir / f"voice-{lang}.wav"
-        )
-        readings.append(Narration(lang, voices[lang], path, wav_seconds(path)))
-    return readings
+    return [narrate_one(lang, verses[lang], day, workdir) for lang in ORDER]
 
 
 def combine(readings: list[Narration], starts: list[float], total: float, out: Path) -> Path:

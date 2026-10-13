@@ -27,27 +27,35 @@ def test_carousel_has_all_three_verses_and_german_wording() -> None:
 
 def test_instagram_limits() -> None:
     """2,200 characters and at most five hashtags, even for long verses."""
-    for text in (captions.carousel_text(LONG, "instagram"), captions.reel_text(LONG, "instagram")):
+    texts = [captions.carousel_text(LONG, "instagram")]
+    texts += [captions.language_reel_text(LONG, lang, "instagram") for lang in ("ta", "en", "de")]
+    for text in texts:
         assert len(text) <= 2200
         assert text.count("#") <= 5
 
 
-def test_reel_leaves_the_verse_to_the_video() -> None:
-    text = captions.reel_text(VERSES, "instagram")
-    assert "Leviticus 20:26" in text
-    assert "And ye shall be holy" not in text
+def test_language_reels_are_entirely_in_one_language() -> None:
+    tamil = captions.language_reel_text(VERSES, "ta", "instagram")
+    assert tamil.startswith("இன்றைய வசனம்\n📖 லேவியராகமம் 20:26")
+    assert "கர்த்தராகிய நான்" in tamil and "And ye shall" not in tamil and "Darum" not in tamil
+    assert "ஞாயிறு ஆராதனை காலை 9:00" in tamil and "#TamilBible" in tamil
+
+    german = captions.language_reel_text(VERSES, "de", "facebook")
+    assert german.startswith("Vers des Tages\n📖 3. Mose 20,26")
+    assert "\u201eDarum sollt ihr mir heilig sein.\u201c" in german
+    assert "Gottesdienst sonntags 9:00 Uhr (auf Tamil)" in german
+    assert "Bibel: Lutherbibel 1912 · Versauswahl: DailyVerses.net" in german
+    assert "https://christ-livingpetra.de" in german and german.count("#") == 3
 
 
-def test_youtube_title_and_description() -> None:
-    title = captions.youtube_title(VERSES)
-    assert title == "லேவியராகமம் 20:26 | இன்றைய வசனம் | Verse of the Day #shorts"
-    assert len(title) <= 100
-    description = captions.youtube_description(VERSES)
+def test_language_youtube_title_and_description() -> None:
+    assert captions.language_youtube_title(VERSES, "de") == "3. Mose 20,26 | Vers des Tages #shorts"
+    assert captions.language_youtube_title(VERSES, "ta") == "லேவியராகமம் 20:26 | இன்றைய வசனம் #shorts"
+    description = captions.language_youtube_description(VERSES, "en")
     assert "Leviticus 20:26 (KJV)\nAnd ye shall be holy unto me." in description
-    assert "3. Mose 20,26 (Lutherbibel 1912)" in description
-    assert "Kindergottesdienst" in description
+    assert "Sunday School (Tamil & English) · 9:45 AM" in description
+    assert "Kindergottesdienst" not in description and "கர்த்தராகிய" not in description
     assert captions.CHURCH["facebook"] in description
-    assert len(description) <= 5000
 
 
 def test_long_passages_drop_german_then_english_from_the_caption() -> None:

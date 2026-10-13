@@ -9,6 +9,11 @@
   "facebook": "https://www.facebook.com/christthelivingpetrachurch/",
   "instagram": "https://www.instagram.com/christthelivingpetra/",
   "address": "Alpenveilchenstraße 45, 80689 München",
+  "label": {
+    "ta": "இன்றைய வசனம்",
+    "en": "Verse of the Day",
+    "de": "Vers des Tages"
+  },
   "invitation": {
     "ta": "ஞாயிறு ஆராதனை காலை 9:00",
     "en": "Sunday worship 9:00 AM",
@@ -36,6 +41,11 @@
     "en": "Share this verse with someone today",
     "de": "Teile diesen Vers mit jemandem"
   },
+  "credits": {
+    "ta": "Bible: tamil-bible.com · Verse selection: DailyVerses.net",
+    "en": "Bible: King James Version · Verse selection: DailyVerses.net",
+    "de": "Bibel: Lutherbibel 1912 · Versauswahl: DailyVerses.net"
+  },
   "hashtags": {
     "instagram": [
       "#VerseOfTheDay",
@@ -53,6 +63,29 @@
       "#இன்றையவசனம்",
       "#VerseOfTheDay",
       "#Bibelvers"
+    ]
+  },
+  "language_hashtags": {
+    "ta": [
+      "#இன்றையவசனம்",
+      "#TamilBible",
+      "#TamilChristian",
+      "#ChristTheLivingPetra",
+      "#München"
+    ],
+    "en": [
+      "#VerseOfTheDay",
+      "#BibleVerse",
+      "#DailyVerse",
+      "#ChristTheLivingPetra",
+      "#Munich"
+    ],
+    "de": [
+      "#VersDesTages",
+      "#Bibelvers",
+      "#Glaube",
+      "#ChristTheLivingPetra",
+      "#München"
     ]
   },
   "voices": {

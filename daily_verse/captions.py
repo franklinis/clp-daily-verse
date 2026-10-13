@@ -68,49 +68,54 @@ def carousel_text(verses: Verses, service: str) -> str:
     return text
 
 
-LISTEN = "🔊 தமிழ் · English · Deutsch"
+# Single-language videos: one Reel / Short per language, entirely in that language.
 
 
-def reel_text(verses: Verses, service: str, narrated: bool = False) -> str:
-    """Instagram / Facebook Reel: shorter, the verse is in the video."""
-    website = CHURCH["website"] if service == "facebook" else CHURCH["website"].removeprefix("https://")
-    listen = [LISTEN] if narrated else []
-    return "\n".join([*_header(verses), *listen, "", *_invitation(website), "", CREDITS, "", _hashtags(service)])
+def _website(service: str) -> str:
+    return CHURCH["website"] if service == "facebook" else CHURCH["website"].removeprefix("https://")
 
 
-def youtube_title(verses: Verses) -> str:
-    """Tamil first, as Tamil viewers search; YouTube allows 100 characters."""
-    title = f"{verses['ta']['reference']} | இன்றைய வசனம் | Verse of the Day #shorts"
-    if len(title) > 100:
-        title = f"{verses['en']['reference']} | Verse of the Day #shorts"
-    return title
+def language_reel_text(verses: Verses, lang: str, service: str) -> str:
+    """Instagram / Facebook Reel for one language: verse, invitation, credits, hashtags."""
+    tags = CHURCH["language_hashtags"][lang][: 3 if service == "facebook" else 5]
+    return "\n".join([
+        CHURCH["label"][lang],
+        f"📖 {verses[lang]['reference']}", "",
+        _quoted(verses, lang), "",
+        f"🙏 {CHURCH['invitation'][lang]}",
+        f"📍 {CHURCH['address']} · {_website(service)}",
+        f"💬 {CHURCH['share'][lang]}", "",
+        CHURCH["credits"][lang], "",
+        " ".join(tags),
+    ])
 
 
-def youtube_description(verses: Verses, narrated: bool = False) -> str:
-    """All three verses (searchable on YouTube), the church's schedule and links."""
-    lines = ["இன்றைய வசனம் · Verse of the Day · Vers des Tages", *([LISTEN] if narrated else []), ""]
-    for lang in ORDER:
-        lines += [verses[lang]["reference"] + TRANSLATION[lang], verses[lang]["text"], ""]
-    lines += [f"{CHURCH['name']} · " + " · ".join(CHURCH["tagline"][lang] for lang in ORDER), ""]
-    for item in CHURCH["schedule"]:
-        lines += [f"🙏 {item['en']}", f"    {item['de']}", f"    {item['ta']}"]
-    lines += [
-        "",
+def language_youtube_title(verses: Verses, lang: str) -> str:
+    """e.g. "Psalm 119,14 | Vers des Tages #shorts" (YouTube allows 100 characters)."""
+    title = f"{verses[lang]['reference']} | {CHURCH['label'][lang]} #shorts"
+    return title if len(title) <= 100 else f"{CHURCH['label'][lang]} #shorts"
+
+
+def language_youtube_description(verses: Verses, lang: str) -> str:
+    """The verse, the church's schedule and links, all in one language."""
+    lines = [
+        CHURCH["label"][lang], "",
+        verses[lang]["reference"] + TRANSLATION[lang], verses[lang]["text"], "",
+        f"{CHURCH['name']} · {CHURCH['tagline'][lang]}", "",
+        *(f"🙏 {item[lang]}" for item in CHURCH["schedule"]), "",
         f"📍 {CHURCH['address']}",
         f"🔗 {CHURCH['website']}",
         f"👍 {CHURCH['facebook']}",
-        f"📷 {CHURCH['instagram']}",
-        "",
-        CREDITS,
-        "",
-        _hashtags("youtube"),
+        f"📷 {CHURCH['instagram']}", "",
+        CHURCH["credits"][lang], "",
+        " ".join(CHURCH["language_hashtags"][lang][:3]),
     ]
     return "\n".join(lines)
 
 
 def check() -> None:
     """Fail early if church.json is missing a language."""
-    for key in ("tagline", "invitation", "share", "voices"):
+    for key in ("tagline", "label", "invitation", "share", "credits", "language_hashtags", "voices"):
         missing = set(ORDER) - set(CHURCH[key])
         if missing:
             raise ValueError(f"church.json {key} is missing {sorted(missing)}")

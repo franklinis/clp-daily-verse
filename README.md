@@ -3,7 +3,7 @@
 Every morning this repository prepares the day's Bible verse in **Tamil, English and German** for Christ the Living Petra Church and saves it as **drafts in Buffer**:
 
 - a three-slide **carousel** (1080×1350) for the Facebook page and Instagram feed, and
-- a 15–25 second vertical **video** (1080×1920) for an Instagram Reel, a Facebook Reel and a YouTube Short. Each language holds long enough to read, zooms slowly, and cross-fades into the next, over soft background music.
+- three short vertical **videos** (1080×1920), one each in Tamil, English and German, for Instagram Reels, Facebook Reels and YouTube Shorts. Each shows the verse with a slow zoom over soft background music and, when narration is on, reads it aloud.
 
 Someone from the church reviews each draft in Buffer and approves it; nothing is published automatically.
 
@@ -34,7 +34,7 @@ To use specific tracks instead, add audio files (mp3, m4a or wav) to `assets/mus
 
 ## Read-aloud
 
-Videos can read each slide aloud: the reference, then the verse, in a calm neural voice from [Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/). Female and male voices alternate between languages and swap every day; the music dips under the voice. Narrated Reels and Shorts are marked AI-generated on Instagram and YouTube.
+Videos can read the verse aloud: the reference, then the verse, in a calm neural voice from [Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/). Female and male voices alternate between the languages and swap every day; the music dips under the voice. Narrated Reels and Shorts are marked AI-generated on Instagram and YouTube.
 
 Voices and the speaking rate are in `church.json` (`voices`, `speaking_rate`); for example, use `ta-LK-SaranyaNeural` / `ta-LK-KumarNeural` for a Sri Lankan Tamil accent.
 
@@ -45,7 +45,7 @@ To set it up: create a free (F0) **Speech** resource in Azure, then add the secr
 1. `.github/workflows/daily.yml` runs every day at 05:15 (CET).
 2. It renders slides and the video for the next days that DailyVerses.net has published (it publishes about two days ahead).
 3. Everything is pushed to the [`media` branch](../../tree/media), which only keeps the last 14 days, so Buffer can download it.
-4. For every day not yet in Buffer, it creates the drafts: a carousel per feed channel and a Reel/Short per video channel, with the publish time preset to 07:00 and alt text on every slide.
+4. For every day not yet in Buffer, it creates the drafts: the carousel per feed channel and each language's video per video channel (11 drafts a day), all with the publish time preset to 07:00.
 
 Re-running is safe: each day's `DD.json` on the `media` branch records the drafts already created.
 
@@ -54,8 +54,7 @@ Re-running is safe: each day's `DD.json` on the `media` branch records the draft
 Each platform gets its own text, in Tamil, English and German:
 
 - **Feed carousel** (Instagram, Facebook): the verse in all three languages, the service invitation, address and website, credits and hashtags.
-- **Reels**: the same without the verse text, which is in the video.
-- **YouTube Short**: a Tamil-first title, and a description with all three verses, the full weekly schedule and links.
+- **Reels and Shorts**: one per language, with the caption, title and hashtags entirely in that language (`label`, `credits` and `language_hashtags` in `church.json`); YouTube descriptions add the weekly schedule and links.
 
 Service times, address, links, invitation wording and hashtags live in [`church.json`](church.json). Edit that file (GitHub's web editor is fine) to change them; for example, add a German service to `schedule` and update `invitation` when German services start. Every entry needs `ta`, `en` and `de`.
 
@@ -75,7 +74,7 @@ Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule
 
 Without the API key the workflow still renders and publishes everything, but creates no drafts.
 
-Buffer's free plan allows 10 scheduled posts **per channel at a time**; a slot frees up as soon as a post publishes, so there is no monthly limit. Facebook and Instagram each get two posts a day (carousel and Reel) and YouTube one, so drafts can be approved up to five days ahead.
+Buffer's free plan allows 10 scheduled posts **per channel at a time**; a slot frees up as soon as a post publishes, so there is no monthly limit. Facebook and Instagram each get four posts a day (the carousel and three Reels) and YouTube three, so drafts can be approved up to two days ahead.
 
 ## Run locally
 
