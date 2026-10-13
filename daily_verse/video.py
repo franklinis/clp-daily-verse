@@ -98,7 +98,7 @@ def build_command(
                 f"{bed},loudnorm=I=-26:TP=-6:LRA=9,aresample=44100[bed]",
                 f"[{len(slides) + 1}:a]aresample=44100,aformat=channel_layouts=stereo,"
                 "highpass=f=80,acompressor=threshold=0.1:ratio=3:attack=10:release=200,asplit[v1][v2]",
-                "[bed][v1]sidechaincompress=threshold=0.02:ratio=6:attack=80:release=900[ducked]",
+                "[bed][v1]sidechaincompress=threshold=0.02:ratio=6:attack=80:release=1800[ducked]",
                 f"[ducked][v2]amix=inputs=2:normalize=0,atrim=0:{total:.2f},"
                 f"loudnorm=I={VOICE_LOUDNESS}:TP=-1.5:LRA=11,aresample=44100[aout]",
             ]
