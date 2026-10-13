@@ -97,9 +97,13 @@ def wait_until_public(url: str, attempts: int = 10) -> None:
 def cmd_drafts(args: argparse.Namespace) -> int:
     api_key = os.environ.get("BUFFER_API_KEY")
     channels = [c.split(":") for c in os.environ.get("BUFFER_CHANNELS", "").split(",") if c]
-    if not api_key or not channels:
-        print("Set BUFFER_API_KEY and BUFFER_CHANNELS (id:facebook,id:instagram)", file=sys.stderr)
+    if not channels:
+        print("Set BUFFER_CHANNELS (id:facebook,id:instagram)", file=sys.stderr)
         return 2
+    if not api_key:
+        # Slides still publish; drafts start once the secret is added.
+        print("::warning::BUFFER_API_KEY is not set, so no Buffer drafts were created")
+        return 0
     base_url = os.environ.get("IMAGE_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
     post_time = time.fromisoformat(os.environ.get("POST_TIME", "07:00"))
 
