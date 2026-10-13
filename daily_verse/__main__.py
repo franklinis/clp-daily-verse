@@ -4,9 +4,10 @@
     python -m daily_verse drafts [--start YYYY-MM-DD] [--days N]
     python -m daily_verse prune [--keep-days N]
 
-Each day gets YYYY/MM/DD-{ta,en,de}.png and a DD.json manifest in $MEDIA_DIR
-(default ./images). The manifest records the verse texts and the Buffer drafts
-already created, so re-running never duplicates work.
+Each day gets YYYY/MM/DD-{ta,en,de}.png (feed carousel), YYYY/MM/DD.mp4 (Reel
+and YouTube Short) and a DD.json manifest in $MEDIA_DIR (default ./images). The
+manifest records the verse texts and the Buffer drafts already created, so
+re-running never duplicates work.
 """
 
 from __future__ import annotations
@@ -18,11 +19,12 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, render, sources
+from . import buffer, render, sources, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -38,7 +40,11 @@ def image_name(day: date, lang: str) -> str:
     return f"{day:%Y/%m/%d}-{lang}.png"
 
 
-def caption(verses: dict[str, dict[str, str]]) -> str:
+def video_name(day: date) -> str:
+    return f"{day:%Y/%m/%d}.mp4"
+
+
+def caption(verses: dict[str, dict[str, str]], carousel: bool = True) -> str:
     """Post text: references in all three languages plus credits."""
     refs = " · ".join(verses[lang]["reference"] for lang in ORDER)
     return "\n".join([
@@ -46,8 +52,7 @@ def caption(verses: dict[str, dict[str, str]]) -> str:
         "",
         refs,
         "",
-        "தமிழ் · English · Deutsch ➜",
-        "",
+        *(["தமிழ் · English · Deutsch ➜", ""] if carousel else []),
         "Bible texts: tamil-bible.com · King James Version · Lutherbibel 1912",
         "Verse selection: DailyVerses.net",
         "",
@@ -59,26 +64,38 @@ def days(start: date, count: int) -> list[date]:
     return [start + timedelta(days=i) for i in range(count)]
 
 
+def render_video(verses: dict[str, sources.Verse], day: date) -> str:
+    """Vertical slides, one per language, cross-faded into an MP4."""
+    with tempfile.TemporaryDirectory() as tmp:
+        slides = [render.render(verses[lang], day, Path(tmp) / f"{lang}.png", "video") for lang in ORDER]
+        seconds = [video.reading_seconds(verses[lang].text) for lang in ORDER]
+        video.make_video(slides, seconds, IMAGES / video_name(day))
+    return video_name(day)
+
+
 def cmd_render(args: argparse.Namespace) -> int:
     for day in days(args.start, args.days):
         path = manifest_path(day)
-        if path.exists() and not args.force:
-            print(f"{day}: already rendered")
-            continue
-        try:
-            verses = sources.fetch_day(day)
-        except sources.SourceError as err:
-            print(f"{day}: skipped, {err}")
-            continue
-        for lang in ORDER:
-            render.render(verses[lang], day, IMAGES / image_name(day, lang))
-        previous = json.loads(path.read_text()) if path.exists() else {}
-        path.write_text(json.dumps({
-            "date": day.isoformat(),
-            "verses": {lang: asdict(verses[lang]) for lang in ORDER},
-            "images": {lang: image_name(day, lang) for lang in ORDER},
-            "buffer": previous.get("buffer", {}),
-        }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        manifest = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+        if manifest and not args.force:
+            verses = {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}
+        else:
+            try:
+                verses = sources.fetch_day(day)
+            except sources.SourceError as err:
+                print(f"{day}: skipped, {err}")
+                continue
+            for lang in ORDER:
+                render.render(verses[lang], day, IMAGES / image_name(day, lang))
+            manifest = {
+                "date": day.isoformat(),
+                "verses": {lang: asdict(verses[lang]) for lang in ORDER},
+                "images": {lang: image_name(day, lang) for lang in ORDER},
+                "buffer": (manifest or {}).get("buffer", {}),
+            }
+        if args.force or not (IMAGES / manifest.get("video", video_name(day))).exists():
+            manifest["video"] = render_video(verses, day)
+        path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"{day}: {verses['en'].reference}")
     return 0
 
@@ -94,11 +111,21 @@ def wait_until_public(url: str, attempts: int = 10) -> None:
     raise RuntimeError(f"{url} is not reachable")
 
 
+def _channels(variable: str) -> list[tuple[str, str]]:
+    """Parse "id:service,id:service" from an environment variable."""
+    return [tuple(c.split(":", 1)) for c in os.environ.get(variable, "").split(",") if c]  # type: ignore[misc]
+
+
+def youtube_title(verses: dict[str, dict[str, str]]) -> str:
+    return f"Verse of the Day · {verses['en']['reference']} · இன்றைய வசனம் #Shorts"
+
+
 def cmd_drafts(args: argparse.Namespace) -> int:
     api_key = os.environ.get("BUFFER_API_KEY")
-    channels = [c.split(":") for c in os.environ.get("BUFFER_CHANNELS", "").split(",") if c]
-    if not channels:
-        print("Set BUFFER_CHANNELS (id:facebook,id:instagram)", file=sys.stderr)
+    carousel_channels = _channels("BUFFER_CHANNELS")
+    video_channels = _channels("BUFFER_VIDEO_CHANNELS")
+    if not carousel_channels and not video_channels:
+        print("Set BUFFER_CHANNELS and/or BUFFER_VIDEO_CHANNELS (id:service,...)", file=sys.stderr)
         return 2
     if not api_key:
         # Slides still publish; drafts start once the secret is added.
@@ -115,25 +142,38 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             continue
         manifest = json.loads(path.read_text(encoding="utf-8"))
         verses = manifest["verses"]
-        images = [
-            (f"{base_url}/{manifest['images'][lang]}", f"{verses[lang]['reference']}: {verses[lang]['text']}")
-            for lang in ORDER
-        ]
         due_at = datetime.combine(day, post_time, TIMEZONE)
-        if any(channel_id not in manifest["buffer"] for channel_id, _ in channels):
-            for url, _ in images:
-                wait_until_public(url)
-        for channel_id, service in channels:
-            if channel_id in manifest["buffer"]:
-                continue
+
+        # (manifest key, channel, service, text, assets, metadata, urls that must be live)
+        jobs = []
+        image_urls = [f"{base_url}/{manifest['images'][lang]}" for lang in ORDER]
+        images = [
+            {"image": {"url": url, "metadata": {"altText": f"{verses[lang]['reference']}: {verses[lang]['text']}"}}}
+            for url, lang in zip(image_urls, ORDER, strict=True)
+        ]
+        for channel_id, service in carousel_channels:
+            jobs.append((channel_id, channel_id, service, caption(verses), images,
+                         buffer.carousel_metadata(service), image_urls))
+        if manifest.get("video"):
+            video_url = f"{base_url}/{manifest['video']}"
+            clip = [{"video": {"url": video_url, "metadata": {"thumbnailOffset": 1000}}}]
+            for channel_id, service in video_channels:
+                jobs.append((f"video:{channel_id}", channel_id, service, caption(verses, carousel=False), clip,
+                             buffer.video_metadata(service, youtube_title(verses)), [video_url]))
+
+        pending = [job for job in jobs if job[0] not in manifest["buffer"]]
+        for url in dict.fromkeys(url for job in pending for url in job[6]):
+            wait_until_public(url)
+        for key, channel_id, service, text, assets, metadata, _ in pending:
+            kind = "reel" if key.startswith("video:") else "carousel"
             try:
-                post_id = buffer.create_draft(api_key, channel_id, service, caption(verses), images, due_at)
+                post_id = buffer.create_draft(api_key, channel_id, text, assets, metadata, due_at)
             except buffer.BufferError as err:
-                print(f"{day} {service}: {err}", file=sys.stderr)
+                print(f"{day} {service} {kind}: {err}", file=sys.stderr)
                 failed = True
                 continue
-            manifest["buffer"][channel_id] = post_id
-            print(f"{day} {service}: draft {post_id}")
+            manifest["buffer"][key] = post_id
+            print(f"{day} {service} {kind}: draft {post_id}")
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 1 if failed else 0
 

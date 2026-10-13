@@ -68,6 +68,14 @@ LANGUAGES = {
 }
 
 
+# Feed posts, and vertical video frames whose margins keep text clear of the
+# Reels/Shorts overlays (top bar, caption and buttons at the bottom, icons on the right).
+FORMATS = {
+    "post": {"size": (1080, 1350), "padding": "84px 96px 64px", "frame": "block", "text_scale": 1.0},
+    "video": {"size": (1080, 1920), "padding": "250px 120px 470px", "frame": "none", "text_scale": 1.1},
+}
+
+
 def find_chrome() -> str:
     """Locate Chrome: $CHROME, then the usual Linux and macOS installs."""
     candidates = [
@@ -83,19 +91,25 @@ def find_chrome() -> str:
     raise RuntimeError("Chrome not found; set the CHROME environment variable")
 
 
-def build_html(verse: Verse, day: date) -> str:
+def build_html(verse: Verse, day: date, fmt: str = "post") -> str:
     """Fill the slide template for one language."""
     cfg = LANGUAGES[verse.lang]
+    layout = FORMATS[fmt]
+    width, height = layout["size"]
     palette = background.palette_for(day)
     return TEMPLATE.substitute(
         lang=verse.lang,
-        background=background.svg(day),
+        width=width,
+        height=height,
+        padding=layout["padding"],
+        frame=layout["frame"],
+        background=background.svg(day, width, height),
         sky_top=palette.sky[0],
         accent=palette.accent,
         quote=palette.quote,
         sans=cfg["sans"],
         serif=cfg["serif"],
-        size=cfg["size"],
+        size=round(cfg["size"] * layout["text_scale"]),
         line_height=cfg["line_height"],
         label_spacing=cfg["label_spacing"],
         logo=LOGO.as_uri(),
@@ -111,18 +125,19 @@ def build_html(verse: Verse, day: date) -> str:
     )
 
 
-def render(verse: Verse, day: date, out: Path) -> Path:
+def render(verse: Verse, day: date, out: Path, fmt: str = "post") -> Path:
     """Write the slide for one language to `out` and return its path."""
+    width, height = FORMATS[fmt]["size"]
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         page = Path(tmp) / "slide.html"
-        page.write_text(build_html(verse, day), encoding="utf-8")
+        page.write_text(build_html(verse, day, fmt), encoding="utf-8")
         subprocess.run(
             [
                 find_chrome(), "--headless=new", "--disable-gpu", "--hide-scrollbars",
                 "--no-sandbox", f"--user-data-dir={Path(tmp) / 'profile'}",
                 "--allow-file-access-from-files", "--force-device-scale-factor=1",
-                "--window-size=1080,1350", "--virtual-time-budget=10000",
+                f"--window-size={width},{height}", "--virtual-time-budget=10000",
                 f"--screenshot={out.resolve()}", page.as_uri(),
             ],
             check=True,

@@ -1,6 +1,11 @@
 # Daily Verse carousel
 
-Every morning this repository prepares a three-slide carousel of the day's Bible verse in **Tamil, English and German** for Christ the Living Petra Church, and saves it as a **draft in Buffer** for the Facebook page and Instagram. Someone from the church reviews each draft in Buffer and approves it; nothing is published automatically.
+Every morning this repository prepares the day's Bible verse in **Tamil, English and German** for Christ the Living Petra Church and saves it as **drafts in Buffer**:
+
+- a three-slide **carousel** (1080×1350) for the Facebook page and Instagram feed, and
+- a 15–25 second vertical **video** (1080×1920) for an Instagram Reel, a Facebook Reel and a YouTube Short. Each language holds long enough to read, zooms slowly, and cross-fades into the next; the audio track is silent, so there is no music licensing to worry about.
+
+Someone from the church reviews each draft in Buffer and approves it; nothing is published automatically.
 
 | Slide | Text | Source |
 |---|---|---|
@@ -24,9 +29,9 @@ Palettes live in `daily_verse/background.py`; the slide layout is `daily_verse/t
 ## How it works
 
 1. `.github/workflows/daily.yml` runs every day at 05:15 (CET).
-2. It renders slides for the next three days that DailyVerses.net has published (it publishes about two days ahead).
-3. The slides are pushed to the [`media` branch](../../tree/media), which only keeps the last 30 days, so Buffer, Facebook and Instagram can download them.
-4. For every day not yet in Buffer, it creates one draft per channel, with all three slides as a carousel, the publish time preset to 07:00, and alt text for each slide.
+2. It renders slides and the video for the next days that DailyVerses.net has published (it publishes about two days ahead).
+3. Everything is pushed to the [`media` branch](../../tree/media), which only keeps the last 14 days, so Buffer can download it.
+4. For every day not yet in Buffer, it creates the drafts: a carousel per feed channel and a Reel/Short per video channel, with the publish time preset to 07:00 and alt text on every slide.
 
 Re-running is safe: each day's `DD.json` on the `media` branch records the drafts already created.
 
@@ -39,23 +44,25 @@ Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule
 1. In Buffer, go to **Settings → API** and create an API key.
 2. In this repository, go to **Settings → Secrets and variables → Actions**:
    - **Secret** `BUFFER_API_KEY`: the key from step 1.
-   - **Variable** `BUFFER_CHANNELS`: comma-separated `channelId:service` pairs, for example `FACEBOOK_CHANNEL_ID:facebook,INSTAGRAM_CHANNEL_ID:instagram` (channel ids are in the URL when you open a channel in Buffer).
+   - **Variable** `BUFFER_CHANNELS`: where the carousel goes, as comma-separated `channelId:service` pairs, for example `FACEBOOK_CHANNEL_ID:facebook,INSTAGRAM_CHANNEL_ID:instagram` (channel ids are in the URL when you open a channel in Buffer).
+   - **Variable** `BUFFER_VIDEO_CHANNELS`: where the video goes, for example `FACEBOOK_CHANNEL_ID:facebook,INSTAGRAM_CHANNEL_ID:instagram,YOUTUBE_CHANNEL_ID:youtube`.
    - Optional **variable** `POST_TIME`: preset publish time, default `07:00` (Europe/Berlin).
 3. Run the workflow once from **Actions → Daily verse drafts → Run workflow**.
 
-Without `BUFFER_CHANNELS` the workflow still renders and publishes the slides, but creates no drafts.
+Without the API key the workflow still renders and publishes everything, but creates no drafts.
 
-Buffer's free plan allows 10 scheduled posts at a time across the organization. Preparing three days for two channels stays within that.
+Buffer's free plan allows 10 scheduled posts at a time across the organization. With the carousel on two channels and the video on three, each day has five drafts, so approve one day at a time rather than a whole week in advance.
 
 ## Run locally
 
 Requires Python 3.11+ and Google Chrome.
 
 ```bash
+pip install -r requirements.txt
 python3 -m daily_verse render --start 2026-10-15 --days 1
 ```
 
-Slides are written to `images/`. Use `--force` to re-render a day after changing the design in `daily_verse/template.html`. Tests: `pip install pytest && pytest`.
+Slides and the video are written to `images/`. Use `--force` to re-render a day after changing the design in `daily_verse/template.html`. Tests: `pip install pytest && pytest`.
 
 ## Licensing
 

@@ -1,9 +1,10 @@
-"""Create carousel drafts in Buffer (https://developers.buffer.com)."""
+"""Create drafts in Buffer (https://developers.buffer.com)."""
 
 from __future__ import annotations
 
 from datetime import datetime
 import json
+from typing import Any
 import urllib.error
 import urllib.request
 
@@ -18,28 +19,39 @@ mutation CreateDraft($input: CreatePostInput!) {
 }
 """
 
-# Per-service metadata Buffer requires for an image post.
-SERVICE_METADATA = {
-    "facebook": {"facebook": {"type": "post"}},
-    "instagram": {"instagram": {"type": "post", "shouldShareToFeed": True}},
-}
-
 
 class BufferError(Exception):
     """Buffer rejected the request."""
 
 
+def carousel_metadata(service: str) -> dict[str, Any]:
+    """Settings for a multi-image feed post."""
+    return {
+        "facebook": {"facebook": {"type": "post"}},
+        "instagram": {"instagram": {"type": "post", "shouldShareToFeed": True}},
+    }[service]
+
+
+def video_metadata(service: str, title: str) -> dict[str, Any]:
+    """Settings for a Reel (Facebook, Instagram) or a YouTube Short."""
+    return {
+        "facebook": {"facebook": {"type": "reel"}},
+        "instagram": {"instagram": {"type": "reel", "shouldShareToFeed": True}},
+        # 22 = People & Blogs. Vertical videos under three minutes become Shorts.
+        "youtube": {"youtube": {"title": title, "categoryId": "22", "privacy": "public", "madeForKids": False}},
+    }[service]
+
+
 def create_draft(
     api_key: str,
     channel_id: str,
-    service: str,
     text: str,
-    images: list[tuple[str, str]],
+    assets: list[dict[str, Any]],
+    metadata: dict[str, Any],
     due_at: datetime,
 ) -> str:
-    """Save a multi-image post as a draft and return its Buffer post id.
+    """Save a post as a draft and return its Buffer post id.
 
-    `images` is a list of (public URL, alt text); several images become a carousel.
     `due_at` pre-fills the publish time shown when the draft is approved.
     """
     post_input = {
@@ -49,8 +61,8 @@ def create_draft(
         "mode": "customScheduled",
         "dueAt": due_at.isoformat(),
         "saveToDraft": True,
-        "assets": [{"image": {"url": url, "metadata": {"altText": alt}}} for url, alt in images],
-        "metadata": SERVICE_METADATA[service],
+        "assets": assets,
+        "metadata": metadata,
     }
     request = urllib.request.Request(
         API_URL,

@@ -1,7 +1,8 @@
 name: Daily verse drafts
 
-# Every morning: render slides for the days DailyVerses.net has published,
-# publish them on the `media` branch, and save Buffer drafts for review.
+# Every morning: render the carousel slides and the Reel/Short video for the days
+# DailyVerses.net has published, publish them on the `media` branch, and save
+# Buffer drafts for review.
 on:
   schedule:
     - cron: "15 4 * * *" # 05:15 CET / 06:15 CEST
@@ -36,6 +37,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install ffmpeg
+        run: pip install -r requirements.txt
+
       - name: Check out the media branch
         run: |
           if git fetch origin media; then
@@ -50,26 +54,27 @@ jobs:
 
       - name: Publish slides
         run: |
-          python -m daily_verse prune --keep-days 30
+          python -m daily_verse prune --keep-days 14
           cd media
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # One commit holding only the last 30 days, so the repo never grows.
+          # One commit holding only the last 14 days, so the repo never grows.
           git checkout -q --orphan publish
           git add -A
           git commit -qm "Daily verse slides" --allow-empty
           git push -qf origin publish:media
 
       - name: Create Buffer drafts
-        if: ${{ vars.BUFFER_CHANNELS != '' }}
+        if: ${{ vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '' }}
         env:
           BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
           BUFFER_CHANNELS: ${{ vars.BUFFER_CHANNELS }}
+          BUFFER_VIDEO_CHANNELS: ${{ vars.BUFFER_VIDEO_CHANNELS }}
           POST_TIME: ${{ vars.POST_TIME || '07:00' }}
         run: python -m daily_verse drafts ${START:+--start "$START"} --days "$DAYS"
 
       - name: Record draft ids
-        if: ${{ always() && vars.BUFFER_CHANNELS != '' }}
+        if: ${{ always() && (vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '') }}
         run: |
           cd media
           git add -A

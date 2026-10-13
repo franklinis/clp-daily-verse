@@ -158,7 +158,7 @@ def luminance(colour: str) -> float:
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
-def _ridge(rng: random.Random, base: float, amplitude: float, style: str) -> str:
+def _ridge(rng: random.Random, base: float, amplitude: float, style: str, width: int, height: int) -> str:
     """A smooth, closed ridgeline: layered sine waves plus one or two peaks."""
     waves = [(rng.uniform(0.8, 2.2), rng.uniform(0, math.tau), 1.0),
              (rng.uniform(2.5, 5.0), rng.uniform(0, math.tau), 0.45),
@@ -170,20 +170,24 @@ def _ridge(rng: random.Random, base: float, amplitude: float, style: str) -> str
         x = i / 48
         y = sum(w * math.sin(f * math.tau * x + p) for f, p, w in waves) / 1.6
         y += sum(h * math.exp(-(((x - px) / pw) ** 2)) for px, pw, h in peaks)
-        points.append((x * WIDTH, base - amplitude * y))
+        points.append((x * width, base - amplitude * y))
     # Catmull-Rom through the points, as cubic Béziers, for soft hills.
-    d = f"M{-10},{HEIGHT + 10} L{points[0][0]:.1f},{points[0][1]:.1f}"
+    d = f"M{-10},{height + 10} L{points[0][0]:.1f},{points[0][1]:.1f}"
     for i in range(len(points) - 1):
         p0, p1, p2 = points[max(i - 1, 0)], points[i], points[i + 1]
         p3 = points[min(i + 2, len(points) - 1)]
         c1 = (p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6)
         c2 = (p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6)
         d += f" C{c1[0]:.1f},{c1[1]:.1f} {c2[0]:.1f},{c2[1]:.1f} {p2[0]:.1f},{p2[1]:.1f}"
-    return d + f" L{WIDTH + 10},{HEIGHT + 10} Z"
+    return d + f" L{width + 10},{height + 10} Z"
 
 
-def svg(day: date) -> str:
-    """The full-bleed background for a date, as inline SVG."""
+def svg(day: date, width: int = WIDTH, height: int = HEIGHT) -> str:
+    """The full-bleed background for a date, as inline SVG.
+
+    The same date gives the same scene at any size, so the feed post and the
+    vertical video share their sky.
+    """
     rng = random.Random(day.toordinal())
     pal = palette_for(day)
     style = rng.choice(["rolling", "layered", "alpine"])
@@ -192,9 +196,9 @@ def svg(day: date) -> str:
     spacing = (0.95 - first_base) / layers
     mist = rng.uniform(0.4, 0.7)
     # Keep the sun or moon to either side, clear of the centred label and date.
-    sun_x = rng.choice([rng.uniform(0.12, 0.3), rng.uniform(0.7, 0.88)]) * WIDTH
-    sun_y = rng.uniform(0.14, 0.32) * HEIGHT
-    horizon = HEIGHT * first_base
+    sun_x = rng.choice([rng.uniform(0.12, 0.3), rng.uniform(0.7, 0.88)]) * width
+    sun_y = rng.uniform(0.14, 0.32) * height
+    horizon = height * first_base
 
     stops = "".join(
         f'<stop offset="{i / (len(pal.sky) - 1):.2f}" stop-color="{c}"/>' for i, c in enumerate(pal.sky)
@@ -207,7 +211,7 @@ def svg(day: date) -> str:
         f'<stop offset=".22" stop-color="{pal.glow}" stop-opacity=".2"/>'
         f'<stop offset="1" stop-color="{pal.glow}" stop-opacity="0"/></radialGradient>',
         # Warm or cool glow rising from the horizon below the sun; fades out in every direction.
-        f'<radialGradient id="horizon" gradientUnits="userSpaceOnUse" cx="{sun_x:.0f}" cy="{horizon:.0f}" r="{WIDTH * 0.9:.0f}">'
+        f'<radialGradient id="horizon" gradientUnits="userSpaceOnUse" cx="{sun_x:.0f}" cy="{horizon:.0f}" r="{width * 0.9:.0f}">'
         f'<stop offset="0" stop-color="{pal.glow}" stop-opacity="{rng.uniform(0.08, 0.2):.2f}"/>'
         f'<stop offset="1" stop-color="{pal.glow}" stop-opacity="0"/></radialGradient>',
         '<filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>',
@@ -220,12 +224,12 @@ def svg(day: date) -> str:
         '<stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'
     )
 
-    shapes = [f'<rect width="{WIDTH}" height="{HEIGHT}" fill="url(#sky)"/>',
-              f'<rect width="{WIDTH}" height="{HEIGHT}" fill="url(#horizon)"/>']
+    shapes = [f'<rect width="{width}" height="{height}" fill="url(#sky)"/>',
+              f'<rect width="{width}" height="{height}" fill="url(#horizon)"/>']
     if pal.night:
         for _ in range(rng.randint(70, 130)):
-            x, y = rng.uniform(0, WIDTH), rng.uniform(0, horizon)
-            if 250 < x < 830 and 80 < y < 430:  # keep the logo, label and date clear
+            x, y = rng.uniform(0, width), rng.uniform(0, horizon)
+            if 0.23 * width < x < 0.77 * width and 0.06 * height < y < 0.32 * height:  # keep the logo, label and date clear
                 continue
             shapes.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(0.8, 2.4):.1f}" '
                           f'fill="{pal.glow}" opacity="{rng.uniform(0.25, 0.9):.2f}"/>')
@@ -271,14 +275,14 @@ def svg(day: date) -> str:
             f'<stop offset="0" stop-color="{colour}"/><stop offset=".5" stop-color="{haze}"/>'
             f'<stop offset="1" stop-color="{haze}"/></linearGradient>'
         )
-        base = HEIGHT * (first_base + spacing * (i + 0.6))
+        base = height * (first_base + spacing * (i + 0.6))
         amplitude = (90 if style == "alpine" else 70) * (1 - 0.1 * i)
-        shapes.append(f'<path d="{_ridge(rng, base, amplitude, style)}" fill="url(#l{i})"/>')
+        shapes.append(f'<path d="{_ridge(rng, base, amplitude, style, width, height)}" fill="url(#l{i})"/>')
         if i in fog_layers:  # a drifting band of mist between ridges
-            shapes.append(f'<ellipse cx="{rng.uniform(0.2, 0.8) * WIDTH:.0f}" cy="{base - 20:.0f}" rx="{WIDTH * 0.7:.0f}" '
+            shapes.append(f'<ellipse cx="{rng.uniform(0.2, 0.8) * width:.0f}" cy="{base - 20:.0f}" rx="{width * 0.7:.0f}" '
                           f'ry="38" fill="{pal.sky[-1]}" opacity="{rng.uniform(0.18, 0.32):.2f}" filter="url(#soft)"/>')
-    shapes.append(f'<rect width="{WIDTH}" height="{HEIGHT}" fill="url(#scrim)"/>')
+    shapes.append(f'<rect width="{width}" height="{height}" fill="url(#scrim)"/>')
     return (
-        f'<svg class="bg" viewBox="0 0 {WIDTH} {HEIGHT}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+        f'<svg class="bg" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
         f'<defs>{"".join(defs)}</defs>{"".join(shapes)}</svg>'
     )

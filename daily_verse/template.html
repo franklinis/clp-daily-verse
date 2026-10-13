@@ -5,15 +5,15 @@
 <style>
   :root { --accent:$accent; --quote:$quote; --mist:#e6efed; }
   * { box-sizing:border-box; margin:0; }
-  html, body { width:1080px; height:1350px; overflow:hidden; }
+  html, body { width:${width}px; height:${height}px; overflow:hidden; }
   body {
     background:$sky_top;
     color:#fff; font-family:$sans;
-    display:flex; flex-direction:column; align-items:center; padding:84px 96px 64px;
+    display:flex; flex-direction:column; align-items:center; padding:$padding;
     position:relative;
   }
   .bg { position:absolute; inset:0; width:100%; height:100%; z-index:0; }
-  .frame { position:absolute; inset:36px; border:2px solid var(--accent); opacity:.5; border-radius:28px; pointer-events:none; z-index:1; }
+  .frame { position:absolute; inset:36px; border:2px solid var(--accent); opacity:.5; border-radius:28px; pointer-events:none; z-index:1; display:$frame; }
   .logo, .label, .date, .rule, .verse, .credit, .church { position:relative; z-index:1; }
   .label, .date, .text, .ref, .credit, .church { text-shadow:0 2px 14px rgba(0,0,0,.4); }
   .logo { width:170px; height:170px; }
