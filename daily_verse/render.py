@@ -8,8 +8,10 @@ from __future__ import annotations
 
 from datetime import date
 import html
+import json
 import os
 from pathlib import Path
+import re
 import shutil
 from string import Template
 import subprocess
@@ -119,10 +121,47 @@ def build_html(verse: Verse, day: date, fmt: str = "post") -> str:
         )),
         q_open=cfg["quotes"][0],
         q_close=cfg["quotes"][1],
-        text=html.escape(verse.text),
+        # Each word in its own span so narrated videos can light words up as they are read.
+        text=" ".join(f'<span class="w">{html.escape(word)}</span>' for word in verse.text.split()),
         reference=html.escape(verse.reference),
         credit=html.escape(cfg["credit"]).replace(" ", "&nbsp;").replace("&nbsp;·&nbsp;", " · "),
     )
+
+
+def _chrome(page: Path, profile: Path, width: int, height: int, *extra: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [
+            find_chrome(), "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-sandbox",
+            f"--user-data-dir={profile}", "--allow-file-access-from-files", "--force-device-scale-factor=1",
+            f"--window-size={width},{height}", "--virtual-time-budget=10000", *extra,
+        ],
+        check=True,
+        capture_output=True,
+        timeout=120,
+    )
+
+
+def render_highlight(verse: Verse, day: date, workdir: Path) -> dict:
+    """The video slide in three looks (dim, bright, accent) and each word's box on screen.
+
+    The layout is identical in all three, so a word cut from one image lines up
+    exactly with the others.
+    """
+    width, height = FORMATS["video"]["size"]
+    workdir.mkdir(parents=True, exist_ok=True)
+    page = workdir / f"{verse.lang}-slide.html"
+    page.write_text(build_html(verse, day, "video"), encoding="utf-8")
+    profile = workdir / "profile"
+    dom = _chrome(page, profile, width, height, "--dump-dom", page.as_uri()).stdout.decode("utf-8", "replace")
+    match = re.search(r'data-boxes="([^"]*)"', dom)
+    if not match:
+        raise RuntimeError("Chrome did not report word positions")
+    looks = {}
+    for mode in ("dim", "bright", "accent"):
+        out = workdir / f"{verse.lang}-{mode}.png"
+        _chrome(page, profile, width, height, f"--screenshot={out}", f"{page.as_uri()}?mode={mode}")
+        looks[mode] = out
+    return {**looks, "boxes": json.loads(html.unescape(match[1]))}
 
 
 def render(verse: Verse, day: date, out: Path, fmt: str = "post") -> Path:

@@ -47,6 +47,53 @@ MUSIC_LOUDNESS = -18  # LUFS: present but calm, under the platforms' -14 target
 VOICE_LOUDNESS = -16  # LUFS for narrated videos; the music sits well below the voice
 
 
+HIGHLIGHT_PAD = (4, 14)  # px around each word, enough for Tamil vowel signs above and below
+
+
+def highlight_timeline(looks: dict, times: list[tuple[float, float]], total: float, workdir: Path) -> Path:
+    """Frames where each word lights up as it is read, and an ffmpeg concat list timing them.
+
+    Before the reading every word is dim; the word being read is in the accent
+    colour and words already read are white; after the last word all are white.
+    `times` are seconds into the video.
+    """
+    from PIL import Image
+
+    workdir.mkdir(parents=True, exist_ok=True)
+    dim, bright, accent = (Image.open(looks[k]).convert("RGB") for k in ("dim", "bright", "accent"))
+    pad_x, pad_y = HIGHLIGHT_PAD
+
+    def box(i: int) -> tuple[int, int, int, int]:
+        left, top, width, height = looks["boxes"][i]
+        return (int(left - pad_x), int(top - pad_y), int(left + width + pad_x), int(top + height + pad_y))
+
+    frames: list[tuple[Path, float]] = []
+
+    def save(image, until: float, start: float) -> None:
+        path = workdir / f"f{len(frames):03d}.png"
+        image.save(path, compress_level=1)
+        frames.append((path, max(until - start, 1 / FPS)))
+
+    canvas = dim.copy()
+    save(canvas, times[0][0] if times else total, 0.0)
+    for k, (start, _) in enumerate(times):
+        frame = canvas.copy()
+        frame.paste(accent.crop(box(k)), box(k)[:2])
+        until = times[k + 1][0] if k + 1 < len(times) else min(total, times[k][1] + 0.3)
+        save(frame, until, start)
+        canvas.paste(bright.crop(box(k)), box(k)[:2])
+    if times:
+        save(canvas, total, min(total, times[-1][1] + 0.3))
+
+    listing = workdir / "timeline.txt"
+    lines = ["ffconcat version 1.0"]
+    for path, length in frames:
+        lines += [f"file '{path.name}'", f"duration {length:.3f}"]
+    lines.append(f"file '{frames[-1][0].name}'")  # concat needs the last image repeated to honour its duration
+    listing.write_text("\n".join(lines) + "\n")
+    return listing
+
+
 def build_command(
     slides: list[Path],
     seconds: list[float],
@@ -54,12 +101,20 @@ def build_command(
     size: tuple[int, int],
     music: Path | None = None,
     narration: Path | None = None,
+    timeline: Path | None = None,
 ) -> list[str]:
-    """The ffmpeg command line; kept separate so it can be tested without encoding."""
+    """The ffmpeg command line; kept separate so it can be tested without encoding.
+
+    With `timeline` (a single slide whose words light up), the frames come from
+    that concat list instead of the still slide.
+    """
     width, height = size
     cmd = [imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-hide_banner", "-loglevel", "error"]
-    for slide in slides:
-        cmd += ["-i", str(slide)]
+    if timeline:
+        cmd += ["-f", "concat", "-safe", "0", "-i", str(timeline)]
+    else:
+        for slide in slides:
+            cmd += ["-i", str(slide)]
     total = sum(seconds) - FADE * (len(slides) - 1)
     if music:
         # Loop library tracks that are shorter than the video.
@@ -73,10 +128,14 @@ def build_command(
     for i, length in enumerate(seconds):
         frames = round(length * FPS)
         # Upscale first so the slow zoom moves in sub-pixel steps instead of jittering.
+        if timeline:  # a moving picture: zoom frame by frame
+            source, step = f"[{i}:v]fps={FPS},", 1
+        else:  # a still: one input frame becomes the whole clip
+            source, step = f"[{i}:v]", frames
         graph.append(
-            f"[{i}:v]scale={width * 2}:{height * 2},"
+            f"{source}scale={width * 2}:{height * 2},"
             f"zoompan=z='1+{ZOOM}*on/{frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-            f":d={frames}:s={width}x{height}:fps={FPS},setsar=1,format=yuv420p[v{i}]"
+            f":d={step}:s={width}x{height}:fps={FPS},setsar=1,format=yuv420p,trim=duration={length:.3f}[v{i}]"
         )
     previous, offset = "v0", 0.0
     for i in range(1, len(slides)):
@@ -122,10 +181,12 @@ def make_video(
     size: tuple[int, int] = (1080, 1920),
     music: Path | None = None,
     narration: Path | None = None,
+    timeline: Path | None = None,
 ) -> Path:
     """Encode the slides, background music and optional narration into an MP4 at `out`."""
     out.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        build_command(slides, seconds, out, size, music, narration), check=True, capture_output=True, timeout=600
+        build_command(slides, seconds, out, size, music, narration, timeline),
+        check=True, capture_output=True, timeout=600,
     )
     return out

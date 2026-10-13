@@ -58,16 +58,23 @@ def render_language_video(verse: sources.Verse, day: date, out: Path, narrate: b
     """One vertical slide with music (and the reading, if narrated); returns whether it is narrated."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
-        slide = render.render(verse, day, work / f"{verse.lang}.png", "video")
-        voice = None
+        voice = timeline = None
         if narrate:
+            # Follow-along: each word lights up as it is read.
+            looks = render.render_highlight(verse, day, work / "looks")
+            slide = looks["bright"]
             reading = speech.narrate_one(verse.lang, asdict(verse), day, work)
             seconds, starts = video.narrated_timing([reading.seconds])
             voice = speech.combine([reading], starts, seconds[0], work / "narration.wav")
+            times = [(starts[0] + a, starts[0] + b) for a, b in speech.word_times(reading, verse.text)]
+            print(f"{day} {verse.lang}: {reading.voice}, {reading.seconds:.1f}s, "
+                  f"{len(reading.words)} spoken words timed for {len(times)} on screen")
+            timeline = video.highlight_timeline(looks, times, seconds[0], work / "frames")
         else:
+            slide = render.render(verse, day, work / f"{verse.lang}.png", "video")
             seconds = [video.reading_seconds(verse.text) + 1.5]
         track, _ = music.track_for(day, seconds[0], work)
-        video.make_video([slide], seconds, out, music=track, narration=voice)
+        video.make_video([slide], seconds, out, music=track, narration=voice, timeline=timeline)
     return voice is not None
 
 
