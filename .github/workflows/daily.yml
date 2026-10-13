@@ -76,6 +76,7 @@ jobs:
           BUFFER_CHANNELS: ${{ vars.BUFFER_CHANNELS }}
           BUFFER_VIDEO_CHANNELS: ${{ vars.BUFFER_VIDEO_CHANNELS }}
           POST_TIME: ${{ vars.POST_TIME || '07:00' }}
+          AI_LABEL: ${{ vars.AI_LABEL }}
         run: python -m daily_verse drafts ${START:+--start "$START"} --days "$DAYS"
 
       - name: Record draft ids

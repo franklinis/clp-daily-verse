@@ -26,7 +26,7 @@ def test_carousel_plus_a_video_per_language_per_channel() -> None:
     day = date(2026, 10, 16)
     videos = {lang: language_video_name(day, lang) for lang in ("ta", "en", "de")}
     assert videos["de"] == "2026/10/16-de.mp4"
-    jobs = draft_jobs(manifest(videos=videos, narrated=True), "https://m", FEED, VIDEO)
+    jobs = draft_jobs(manifest(videos=videos, narrated=True), "https://m", FEED, VIDEO, ai_label=True)
     assert len(jobs) == 2 + 3 * 3
     assert len({job.key for job in jobs}) == len(jobs)
     youtube_de = next(job for job in jobs if job.key == "video-de:yt1")
@@ -47,3 +47,9 @@ def test_older_days_keep_only_their_existing_drafts() -> None:
 def test_unnarrated_videos_are_not_labelled_ai() -> None:
     jobs = draft_jobs(manifest(videos={"en": "2026/10/16-en.mp4"}, narrated=False), "https://m", [], VIDEO)
     assert all(not job.metadata.get(job.service, {}).get("isAiGenerated", False) for job in jobs)
+
+
+def test_narrated_videos_are_unlabelled_unless_switched_on() -> None:
+    narrated = manifest(videos={"en": "2026/10/16-en.mp4"}, narrated=True)
+    jobs = draft_jobs(narrated, "https://m", [], VIDEO)
+    assert all(not job.metadata[job.service].get("isAiGenerated", False) for job in jobs)

@@ -145,8 +145,13 @@ class Job:
     urls: list
 
 
-def draft_jobs(manifest: dict, base_url: str, carousel_channels: list, video_channels: list) -> list[Job]:
-    """Every draft a day needs: the carousel per feed channel, and each language's video per video channel."""
+def draft_jobs(
+    manifest: dict, base_url: str, carousel_channels: list, video_channels: list, ai_label: bool = False
+) -> list[Job]:
+    """Every draft a day needs: the carousel per feed channel, and each language's video per video channel.
+
+    `ai_label` marks narrated videos as AI-generated where Buffer supports it (Instagram, YouTube).
+    """
     verses = manifest["verses"]
     jobs = []
     image_urls = [f"{base_url}/{manifest['images'][lang]}" for lang in ORDER]
@@ -157,14 +162,14 @@ def draft_jobs(manifest: dict, base_url: str, carousel_channels: list, video_cha
     for channel_id, service in carousel_channels:
         jobs.append(Job(channel_id, channel_id, service, "carousel", captions.carousel_text(verses, service),
                         images, buffer.carousel_metadata(service), image_urls))
-    narrated = manifest.get("narrated", False)
+    label = ai_label and manifest.get("narrated", False)
     for lang, name in manifest.get("videos", {}).items():
         url = f"{base_url}/{name}"
         clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
         for channel_id, service in video_channels:
             text = (captions.language_youtube_description(verses, lang) if service == "youtube"
                     else captions.language_reel_text(verses, lang, service))
-            metadata = buffer.video_metadata(service, captions.language_youtube_title(verses, lang), ai_voice=narrated)
+            metadata = buffer.video_metadata(service, captions.language_youtube_title(verses, lang), ai_voice=label)
             jobs.append(Job(f"video-{lang}:{channel_id}", channel_id, service, f"{lang} video", text, clip,
                             metadata, [url]))
     return jobs
@@ -184,6 +189,7 @@ def cmd_drafts(args: argparse.Namespace) -> int:
         return 0
     base_url = os.environ.get("IMAGE_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
     post_time = time.fromisoformat(os.environ.get("POST_TIME", "07:00"))
+    ai_label = os.environ.get("AI_LABEL", "off").lower() == "on"
 
     failed = False
     for day in days(args.start, args.days):
@@ -194,7 +200,7 @@ def cmd_drafts(args: argparse.Namespace) -> int:
         manifest = json.loads(path.read_text(encoding="utf-8"))
         due_at = datetime.combine(day, post_time, TIMEZONE)
         pending = [
-            job for job in draft_jobs(manifest, base_url, carousel_channels, video_channels)
+            job for job in draft_jobs(manifest, base_url, carousel_channels, video_channels, ai_label)
             if job.key not in manifest["buffer"]
         ]
         for url in dict.fromkeys(url for job in pending for url in job.urls):
