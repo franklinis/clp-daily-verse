@@ -5,7 +5,9 @@ name: Daily verse drafts
 # Buffer drafts for review.
 on:
   schedule:
-    - cron: "15 4 * * *" # 05:15 CET / 06:15 CEST
+    # Three runs a day: GitHub can delay or skip scheduled runs when busy, and the
+    # job is safe to repeat (days already done are skipped).
+    - cron: "15 4,10,16 * * *" # 05:15, 11:15, 17:15 CET / 06:15, 12:15, 18:15 CEST
   workflow_dispatch:
     inputs:
       start:

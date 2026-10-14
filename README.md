@@ -42,7 +42,7 @@ To set it up: create a free (F0) **Speech** resource in Azure, then add the secr
 
 ## How it works
 
-1. `.github/workflows/daily.yml` runs every day at 05:15 (CET).
+1. `.github/workflows/daily.yml` runs three times a day (06:15, 12:15 and 18:15 in summer); repeat runs skip days already done.
 2. It renders slides and the video for the next days that DailyVerses.net has published (it publishes about two days ahead).
 3. Everything is pushed to the [`media` branch](../../tree/media), which only keeps the last 14 days, so Buffer can download it.
 4. For every day not yet in Buffer, it creates the drafts: the carousel per feed channel and each language's video per video channel (11 drafts a day), all with the publish time preset to 07:00.
