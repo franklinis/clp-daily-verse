@@ -62,6 +62,7 @@ jobs:
       - name: Publish slides
         run: |
           python -m daily_verse prune --keep-days 14
+          python -m daily_verse status-page
           cd media
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

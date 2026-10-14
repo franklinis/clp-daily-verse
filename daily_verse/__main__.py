@@ -4,6 +4,7 @@
     python -m daily_verse drafts [--start YYYY-MM-DD] [--days N]
     python -m daily_verse prune [--keep-days N]
     python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR   (narrated test videos)
+    python -m daily_verse status-page   (phone page for sharing the videos to WhatsApp Status)
 
 Each day gets YYYY/MM/DD-{ta,en,de}.png (feed carousel), YYYY/MM/DD.mp4 (Reel
 and YouTube Short) and a DD.json manifest in $MEDIA_DIR (default ./images). The
@@ -25,7 +26,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, music, render, sources, speech, video
+from . import buffer, captions, music, render, sources, speech, status_page, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -257,9 +258,15 @@ def cmd_preview(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_status_page(args: argparse.Namespace) -> int:
+    page = status_page.build(IMAGES, datetime.now(TIMEZONE).date())
+    print(f"Status page: {page}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="daily_verse")
-    parser.add_argument("command", choices=["render", "drafts", "prune", "preview"])
+    parser.add_argument("command", choices=["render", "drafts", "prune", "preview", "status-page"])
     parser.add_argument("--start", type=date.fromisoformat,
                         default=datetime.now(TIMEZONE).date() + timedelta(days=1))
     parser.add_argument("--days", type=int, default=3)
@@ -267,7 +274,8 @@ def main() -> int:
     parser.add_argument("--keep-days", type=int, default=30)
     parser.add_argument("--out", default="preview", help="folder for preview videos")
     args = parser.parse_args()
-    commands = {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune, "preview": cmd_preview}
+    commands = {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune, "preview": cmd_preview,
+                "status-page": cmd_status_page}
     return commands[args.command](args)
 
 

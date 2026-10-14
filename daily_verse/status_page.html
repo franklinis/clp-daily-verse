@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Verse · Status</title>
+<meta name="theme-color" content="#205b4f">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #173f37; --card: #1f4d43; --line: rgba(255,255,255,.12);
+    --text: #ffffff; --muted: #c9ddd8; --accent: #cba590; --button: #25d366; --button-text: #06281f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Tamil", sans-serif;
+    padding: env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  main { max-width: 560px; margin: 0 auto; min-width: 0; }
+  .card, .how { overflow-wrap: anywhere; }
+  header { display: flex; align-items: center; gap: 12px; padding: 20px 0 8px; }
+  header img { width: 44px; height: 44px; border-radius: 10px; }
+  h1 { font-size: 20px; margin: 0; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .how { background: rgba(0,0,0,.18); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin: 12px 0 4px; color: var(--muted); font-size: 14px; }
+  .how b { color: var(--text); }
+  h2 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin: 24px 0 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 14px; }
+  .card h3 { margin: 0; font-size: 18px; }
+  .card .ref { color: var(--muted); font-size: 14px; margin: 2px 0 10px; }
+  video { width: 100%; aspect-ratio: 9 / 16; max-height: 52vh; background: #000; border-radius: 12px; display: block; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  button, .download {
+    font: inherit; border: 0; border-radius: 12px; padding: 12px 10px; text-align: center;
+    color: var(--text); background: rgba(255,255,255,.1); text-decoration: none; cursor: pointer; min-height: 48px;
+  }
+  .share { grid-column: 1 / -1; background: var(--button); color: var(--button-text); font-weight: 600; }
+  .share[disabled] { opacity: .6; }
+  .empty { color: var(--muted); }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: #fff; color: #173f37; padding: 10px 16px; border-radius: 999px; font-size: 14px;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="">
+    <div>
+      <h1>Daily Verse · Status</h1>
+      <p>Christ the Living Petra Church</p>
+    </div>
+  </header>
+  <div class="how">
+    Tap <b>Share to Status</b>, choose <b>WhatsApp</b>, then <b>My status</b>.
+    Use <b>Copy caption</b> first if you want to paste the reference as the Status text.
+  </div>
+  <div id="days"></div>
+  <footer>Updated every morning · christ-livingpetra.de</footer>
+</main>
+<div class="toast" id="toast"></div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+  const data = JSON.parse(document.getElementById('data').textContent);
+  const files = new Map();      // video path -> File, ready to share
+  const loading = new Map();    // video path -> Promise<File>
+
+  // YYYY-MM-DD in the phone's own time zone.
+  const today = new Date().toLocaleDateString('sv-SE');
+  const tomorrow = new Date(Date.now() + 864e5).toLocaleDateString('sv-SE');
+
+  function title(day) {
+    if (day === today) return 'Today';
+    if (day === tomorrow) return 'Tomorrow';
+    return new Date(day + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  function toast(text) {
+    const el = document.getElementById('toast');
+    el.textContent = text;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function load(item) {
+    if (!loading.has(item.video)) {
+      loading.set(item.video, fetch(item.video)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
+        .then(blob => {
+          const file = new File([blob], item.filename, { type: 'video/mp4' });
+          files.set(item.video, file);
+          return file;
+        }));
+    }
+    return loading.get(item.video);
+  }
+
+  function canShareFiles(file) {
+    return !!(navigator.canShare && navigator.share && navigator.canShare({ files: [file] }));
+  }
+
+  async function share(item, button) {
+    const file = files.get(item.video);
+    if (!file) {
+      // Phones only allow sharing straight from a tap, so fetch first and ask for a second tap.
+      button.disabled = true;
+      button.textContent = 'Preparing video…';
+      try { await load(item); } catch (e) { button.textContent = 'Could not load video'; return; }
+      button.disabled = false;
+      button.textContent = 'Tap again to share';
+      return;
+    }
+    if (!canShareFiles(file)) {
+      toast('Sharing isn’t supported here; use Download instead');
+      return;
+    }
+    try {
+      await navigator.share({ files: [file] });
+      button.textContent = 'Share to Status';
+    } catch (e) {
+      if (e.name !== 'AbortError') toast('Sharing didn’t work; use Download instead');
+    }
+  }
+
+  function card(item) {
+    const el = document.createElement('section');
+    el.className = 'card';
+    el.innerHTML = `
+      <h3></h3><div class="ref"></div>
+      <video controls playsinline preload="metadata"></video>
+      <div class="actions">
+        <button class="share">Share to Status</button>
+        <button class="copy">Copy caption</button>
+        <a class="download">Download</a>
+      </div>`;
+    el.querySelector('h3').textContent = item.language;
+    el.querySelector('.ref').textContent = item.reference;
+    el.querySelector('video').src = item.video + '#t=0.5';  // shows the slide as the preview instead of black
+    const download = el.querySelector('.download');
+    download.href = item.video;
+    download.download = item.filename;
+    el.querySelector('.share').addEventListener('click', e => share(item, e.currentTarget));
+    el.querySelector('.copy').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(item.caption); toast('Caption copied'); }
+      catch (e) { prompt('Copy the caption:', item.caption); }
+    });
+    return el;
+  }
+
+  const container = document.getElementById('days');
+  let days = data.days.filter(d => d.date >= today);
+  if (!days.length && data.days.length) days = [data.days[data.days.length - 1]];  // nothing new yet: show the latest
+  if (!days.length) container.innerHTML = '<p class="empty">No videos yet. Check back after the morning update.</p>';
+  days.forEach((day, i) => {
+    const heading = document.createElement('h2');
+    heading.textContent = title(day.date);
+    container.appendChild(heading);
+    day.items.forEach(item => {
+      container.appendChild(card(item));
+      if (i === 0) load(item).catch(() => {});  // have the first day's videos ready to share
+    });
+  });
+</script>
+</body>
+</html>

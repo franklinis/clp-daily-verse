@@ -58,6 +58,10 @@ Each platform gets its own text, in Tamil, English and German:
 
 Service times, address, links, invitation wording and hashtags live in [`church.json`](church.json). Edit that file (GitHub's web editor is fine) to change them; for example, add a German service to `schedule` and update `invitation` when German services start. Every entry needs `ta`, `en` and `de`.
 
+## WhatsApp Status
+
+WhatsApp has no official way to post a Status automatically (third-party tools that claim to do it connect like WhatsApp Web, which breaks WhatsApp's terms and can get the number banned). Instead, **https://franklinis.github.io/clp-daily-verse/** lists the day's videos with a **Share to Status** button: tap it, choose WhatsApp, then *My status*. **Copy caption** puts the label, reference and website on the clipboard for the Status text. The page is rebuilt by every run (`python -m daily_verse status-page`) and can be added to the phone's home screen.
+
 ## Reviewing drafts
 
 Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule** (keeps the 07:00 time) or edit the time first. Delete a draft to skip a day.
