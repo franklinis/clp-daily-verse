@@ -106,3 +106,18 @@ def test_slide_uses_the_scene_instead_of_mountains(tmp_path: Path) -> None:
     with_scene = build_html(verse, date(2026, 10, 15), "video", scene)
     assert f'<img class="bg" src="{scene.resolve().as_uri()}"' in with_scene and "<svg" not in with_scene
     assert "<svg" in build_html(verse, date(2026, 10, 15), "video")
+
+
+def test_art_direction_varies_by_day_and_follows_feasts() -> None:
+    year = [date(2027, 1, 1) + __import__("datetime").timedelta(days=i) for i in range(60)]
+    directions = {imagery.art_direction(d) for d in year}
+    assert len(directions) > 40  # rarely the same light, season and colour twice
+    assert imagery.art_direction(date(2026, 12, 25)).startswith("a quiet winter night under one bright star")
+    assert imagery.art_direction(date(2026, 10, 15)) == imagery.art_direction(date(2026, 10, 15))
+    assert "Art direction for today:" in imagery.prompt(VERSES, [], date(2026, 10, 15))
+
+
+def test_every_palette_has_a_colour_mood() -> None:
+    from daily_verse import background
+
+    assert {p.name for p in background.SUNDAY + background.WEEKDAY} <= set(imagery.MOODS)

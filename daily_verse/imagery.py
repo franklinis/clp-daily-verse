@@ -19,6 +19,7 @@ from functools import lru_cache
 import json
 import os
 from pathlib import Path
+import random
 import urllib.error
 import urllib.request
 
@@ -30,7 +31,8 @@ RULES = (
     "Rules: no people or human figures, no faces or hands, no text, letters, numbers, signs or logos, "
     "no depictions of God, Jesus or angels, no crosses or other religious symbols, no buildings in focus. "
     "Portrait composition. Keep the middle third calm, soft and low in detail, because white text will be "
-    "placed there; slightly darker tones overall; put the main subject near the bottom or the edges."
+    "placed there; use a moderately low-key exposure (not bright or washed out, especially in the middle); "
+    "put the main subject near the bottom or the edges."
 )
 
 
@@ -44,17 +46,61 @@ def enabled() -> bool:
     )
 
 
-def prompt(verses: dict[str, dict[str, str]], topics: list[str]) -> str:
-    """Describe the scene to paint, from the English verse and its topics."""
+LIGHT = [
+    "soft sunrise light", "clear fresh morning light", "bright midday sun under a blue sky", "warm golden afternoon",
+    "glowing sunset", "deep blue hour just after sunset", "light breaking through clouds after rain",
+    "soft overcast light", "a calm night lit by the moon and stars",
+]
+SEASONS = [
+    "spring, with fresh green leaves and blossom", "lush high summer", "autumn, with red and gold leaves",
+    "winter, with snow and frost", "the dry season, with warm earth tones",
+]
+# A colour mood for each palette in background.py, so photos and generated days feel like one series.
+MOODS = {
+    "dawn": "cool dawn blues", "ocean": "deep ocean blues", "indigo": "indigo and violet", "storm": "stormy blue-greys",
+    "arctic": "icy blues and white", "harbour": "harbour blues with warm highlights", "dusk": "dusky purples",
+    "lavender": "soft lavender", "plum": "deep plum", "rose dusk": "rose and mauve", "wine": "deep wine reds",
+    "orchid": "orchid purples and peach", "earth": "warm earth browns", "terracotta": "terracotta and clay",
+    "gold": "rich golds", "amber": "amber and honey", "sunrise": "sunrise pinks and oranges",
+    "sunset": "sunset oranges and magentas", "copper": "copper and bronze", "desert": "sand and warm stone",
+    "olive": "olive and sage greens", "teal": "teal and turquoise", "lagoon": "lagoon greens and blues",
+    "slate": "slate greys", "charcoal": "charcoal and silver", "mist": "misty grey-greens",
+    "midnight": "midnight blue", "aurora": "aurora greens", "starlight": "starry night blues",
+    "violet night": "violet night", "petra": "deep forest greens", "emerald": "emerald greens",
+    "forest": "pine greens", "sage": "sage greens",
+}
+FEAST_DIRECTION = {
+    "christmas": "a quiet winter night under one bright star", "new year": "the first light of a new dawn",
+    "good friday": "a sombre, still, overcast evening", "easter": "a radiant sunrise",
+    "pentecost": "warm light and wind moving through the scene",
+}
+
+
+def art_direction(day: date) -> str:
+    """Today's light, season and colour mood, so a year of images doesn't all look the same."""
+    from .background import feast, palette_for
+
+    rng = random.Random(day.toordinal() * 31)
+    mood = MOODS.get(palette_for(day).name, "natural colours")
+    if name := feast(day):
+        return f"{FEAST_DIRECTION[name]}; colour mood: {mood}"
+    return f"{rng.choice(LIGHT)}; {rng.choice(SEASONS)}; colour mood: {mood}"
+
+
+def prompt(verses: dict[str, dict[str, str]], topics: list[str], day: date | None = None) -> str:
+    """Describe the scene to paint, from the English verse, its topics and today's art direction."""
     english = verses["en"]
     themes = f" Themes: {', '.join(topics)}." if topics else ""
+    direction = f"Art direction for today: {art_direction(day)}.\n" if day else ""
     return (
         "Create a background image for a daily Bible verse post.\n"
         f'Verse: "{english["text"]}" ({english["reference"]}).{themes}\n'
-        "Show a natural landscape or a simple still-life scene whose imagery reflects the meaning of this "
-        "verse, for example water, light, paths, fields, sky, trees, mountains, rocks, a lamp or bread, "
-        "chosen to fit this particular verse.\n"
-        f"Style: {CHURCH.get('image_style', 'a calm, softly lit nature photograph')}.\n"
+        "Choose one clear, specific image that captures this verse's meaning, for example flowing water, "
+        "a path, a harvest field, a lamp, bread, a rock, a vine, a shepherd's meadow or a sky full of stars, "
+        "and vary the setting (forest, mountains, coast, desert, meadow, garden, river, sky); avoid a generic "
+        "misty landscape.\n"
+        f"{direction}"
+        f"Style: {CHURCH.get('image_style', 'cinematic nature photography')}.\n"
         f"{RULES}"
     )
 
@@ -106,7 +152,7 @@ def scene_for(day: date, verses: dict[str, dict[str, str]], topics: list[str], m
     if not enabled():
         return None
     try:
-        return generate(prompt(verses, topics), path)
+        return generate(prompt(verses, topics, day), path)
     except ImageError as err:
         print(f"::warning::{day}: no AI background ({err}); using the mountain background")
         return None

@@ -98,10 +98,12 @@ def scene_html(scene: Path) -> str:
     from . import imagery  # imported here: imagery -> captions -> render
 
     a = imagery.shade(str(scene))
+    # Darkest behind the verse in the middle; lighter at the top and bottom so the picture shows.
+    stops = [(0, 0.5), (22, 0.62), (32, 1.0), (72, 1.0), (88, 0.72), (100, 0.82)]
+    gradient = ", ".join(f"rgba(0,0,0,{a * f:.2f}) {p}%" for p, f in stops)
     return (
         f'<img class="bg" src="{scene.resolve().as_uri()}" alt="" style="object-fit:cover">'
-        f'<div class="bg" style="background:linear-gradient(180deg, rgba(0,0,0,{a * 0.8:.2f}) 0%, '
-        f'rgba(0,0,0,{a:.2f}) 45%, rgba(0,0,0,{min(0.85, a * 1.1):.2f}) 100%)"></div>'
+        f'<div class="bg" style="background:linear-gradient(180deg, {gradient})"></div>'
     )
 
 

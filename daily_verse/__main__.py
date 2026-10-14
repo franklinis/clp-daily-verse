@@ -280,9 +280,9 @@ def cmd_preview(args: argparse.Namespace) -> int:
                 print(f"{day}: {out} ({speech.voices_for(day)[lang]})")
             continue
         texts = {lang: asdict(verses[lang]) for lang in ORDER}
-        print(f"{day}: {verses['en'].reference}, topics {topics}")
+        print(f"{day}: {verses['en'].reference}, topics {topics}; {imagery.art_direction(day)}")
         try:
-            scene = imagery.generate(imagery.prompt(texts, topics), out_dir / f"{day}-scene.jpg")
+            scene = imagery.generate(imagery.prompt(texts, topics, day), out_dir / f"{day}-scene.jpg")
         except imagery.ImageError as err:
             print(f"{day}: no image: {err}")
             failed = True
