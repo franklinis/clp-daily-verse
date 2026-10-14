@@ -24,11 +24,11 @@ class BufferError(Exception):
     """Buffer rejected the request."""
 
 
-def carousel_metadata(service: str) -> dict[str, Any]:
-    """Settings for a multi-image feed post."""
+def carousel_metadata(service: str, ai_image: bool = False) -> dict[str, Any]:
+    """Settings for a multi-image feed post; `ai_image` labels an AI background where supported."""
     return {
         "facebook": {"facebook": {"type": "post"}},
-        "instagram": {"instagram": {"type": "post", "shouldShareToFeed": True}},
+        "instagram": {"instagram": {"type": "post", "shouldShareToFeed": True, "isAiGenerated": ai_image}},
     }[service]
 
 

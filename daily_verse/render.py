@@ -93,8 +93,20 @@ def find_chrome() -> str:
     raise RuntimeError("Chrome not found; set the CHROME environment variable")
 
 
-def build_html(verse: Verse, day: date, fmt: str = "post") -> str:
-    """Fill the slide template for one language."""
+def scene_html(scene: Path) -> str:
+    """A verse-matched photo as the backdrop, darkened just enough for white text."""
+    from . import imagery  # imported here: imagery -> captions -> render
+
+    a = imagery.shade(str(scene))
+    return (
+        f'<img class="bg" src="{scene.resolve().as_uri()}" alt="" style="object-fit:cover">'
+        f'<div class="bg" style="background:linear-gradient(180deg, rgba(0,0,0,{a * 0.8:.2f}) 0%, '
+        f'rgba(0,0,0,{a:.2f}) 45%, rgba(0,0,0,{min(0.85, a * 1.1):.2f}) 100%)"></div>'
+    )
+
+
+def build_html(verse: Verse, day: date, fmt: str = "post", scene: Path | None = None) -> str:
+    """Fill the slide template for one language; `scene` replaces the generated mountains."""
     cfg = LANGUAGES[verse.lang]
     layout = FORMATS[fmt]
     width, height = layout["size"]
@@ -105,7 +117,7 @@ def build_html(verse: Verse, day: date, fmt: str = "post") -> str:
         height=height,
         padding=layout["padding"],
         frame=layout["frame"],
-        background=background.svg(day, width, height),
+        background=scene_html(scene) if scene else background.svg(day, width, height),
         sky_top=palette.sky[0],
         accent=palette.accent,
         quote=palette.quote,
@@ -141,7 +153,7 @@ def _chrome(page: Path, profile: Path, width: int, height: int, *extra: str) -> 
     )
 
 
-def render_highlight(verse: Verse, day: date, workdir: Path) -> dict:
+def render_highlight(verse: Verse, day: date, workdir: Path, scene: Path | None = None) -> dict:
     """The video slide in three looks (dim, bright, accent) and each word's box on screen.
 
     The layout is identical in all three, so a word cut from one image lines up
@@ -150,7 +162,7 @@ def render_highlight(verse: Verse, day: date, workdir: Path) -> dict:
     width, height = FORMATS["video"]["size"]
     workdir.mkdir(parents=True, exist_ok=True)
     page = workdir / f"{verse.lang}-slide.html"
-    page.write_text(build_html(verse, day, "video"), encoding="utf-8")
+    page.write_text(build_html(verse, day, "video", scene), encoding="utf-8")
     profile = workdir / "profile"
     dom = _chrome(page, profile, width, height, "--dump-dom", page.as_uri()).stdout.decode("utf-8", "replace")
     match = re.search(r'data-boxes="([^"]*)"', dom)
@@ -164,13 +176,13 @@ def render_highlight(verse: Verse, day: date, workdir: Path) -> dict:
     return {**looks, "boxes": json.loads(html.unescape(match[1]))}
 
 
-def render(verse: Verse, day: date, out: Path, fmt: str = "post") -> Path:
+def render(verse: Verse, day: date, out: Path, fmt: str = "post", scene: Path | None = None) -> Path:
     """Write the slide for one language to `out` and return its path."""
     width, height = FORMATS[fmt]["size"]
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         page = Path(tmp) / "slide.html"
-        page.write_text(build_html(verse, day, fmt), encoding="utf-8")
+        page.write_text(build_html(verse, day, fmt, scene), encoding="utf-8")
         subprocess.run(
             [
                 find_chrome(), "--headless=new", "--disable-gpu", "--hide-scrollbars",

@@ -1,6 +1,6 @@
 name: Preview narration
 
-# Builds read-aloud videos for listening, as a private download on the run page.
+# Builds read-aloud videos or verse-matched backgrounds for review, as a private download on the run page.
 # Nothing is published and Buffer is not touched.
 on:
   workflow_dispatch:
@@ -12,6 +12,11 @@ on:
         description: "How many days"
         required: false
         default: "1"
+      kind:
+        description: "What to preview"
+        type: choice
+        options: [narration, backgrounds]
+        default: narration
 
 permissions:
   contents: read
@@ -38,14 +43,21 @@ jobs:
       - name: Read verses already fetched
         run: git fetch origin media && git worktree add media FETCH_HEAD || mkdir -p media
 
-      - name: Render narrated videos
+      - name: Render preview
         env:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: ${{ vars.AZURE_SPEECH_REGION }}
-        run: python -m daily_verse preview ${START:+--start "$START"} --days "$DAYS" --out preview
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AZURE_IMAGE_DEPLOYMENT: ${{ vars.AZURE_IMAGE_DEPLOYMENT }}
+          KIND: ${{ inputs.kind || 'narration' }}
+        run: python -m daily_verse preview ${START:+--start "$START"} --days "$DAYS" --out preview --kind "$KIND"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: narration-preview
-          path: preview/*.mp4
+          name: ${{ inputs.kind || 'narration' }}-preview
+          path: |
+            preview/*.mp4
+            preview/*.jpg
+            preview/*.png
           retention-days: 7

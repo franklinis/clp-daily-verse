@@ -26,6 +26,12 @@ Each slide has a generated misty-mountain background, like the artwork on christ
 
 Palettes live in `daily_verse/background.py`; the slide layout is `daily_verse/template.html`.
 
+### Verse-matched backgrounds (optional)
+
+With `BACKGROUNDS` = `ai`, each day gets one background painted for its verse by an Azure (Microsoft Foundry) image model: the English verse and its DailyVerses.net topics become a prompt for a calm nature or still-life scene, with strict rules (no people, no text, no depictions of God, a quiet middle for the text). The image is saved as `DD-scene.jpg`, shared by every language and format, and darkened automatically for readable white text. If Azure refuses or fails, that day uses the mountain background. The style is `image_style` in `church.json`.
+
+Setup: deploy `gpt-image-2` in Microsoft Foundry, then add the secret `AZURE_OPENAI_KEY` and the variables `AZURE_OPENAI_ENDPOINT` (e.g. `https://<resource>.openai.azure.com`) and `AZURE_IMAGE_DEPLOYMENT` (the deployment name). Run **Actions → Preview narration** with *kind* = `backgrounds` to see sample images first.
+
 ## Music
 
 By default each video gets an original instrumental composed in code (`daily_verse/music.py`): soft chords and sparse piano-like notes in a key and progression chosen per date. The church owns it outright, so YouTube's and Meta's copyright matching can never claim or mute a post, which does happen with "royalty-free" library tracks.

@@ -3,7 +3,7 @@
     python -m daily_verse render [--start YYYY-MM-DD] [--days N] [--force]
     python -m daily_verse drafts [--start YYYY-MM-DD] [--days N]
     python -m daily_verse prune [--keep-days N]
-    python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR   (narrated test videos)
+    python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR [--kind narration|backgrounds]
     python -m daily_verse status-page   (phone page for sharing the videos to WhatsApp Status)
 
 Each day gets YYYY/MM/DD-{ta,en,de}.png (feed carousel), YYYY/MM/DD.mp4 (Reel
@@ -26,7 +26,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, music, render, sources, speech, status_page, video
+from . import buffer, captions, imagery, music, render, sources, speech, status_page, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -55,14 +55,16 @@ def language_video_name(day: date, lang: str) -> str:
     return f"{day:%Y/%m/%d}-{lang}.mp4"
 
 
-def render_language_video(verse: sources.Verse, day: date, out: Path, narrate: bool) -> bool:
+def render_language_video(
+    verse: sources.Verse, day: date, out: Path, narrate: bool, scene: Path | None = None
+) -> bool:
     """One vertical slide with music (and the reading, if narrated); returns whether it is narrated."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         voice = timeline = None
         if narrate:
             # Follow-along: each word lights up as it is read.
-            looks = render.render_highlight(verse, day, work / "looks")
+            looks = render.render_highlight(verse, day, work / "looks", scene)
             slide = looks["bright"]
             reading = speech.narrate_one(verse.lang, asdict(verse), day, work)
             seconds, starts = video.narrated_timing([reading.seconds])
@@ -73,7 +75,7 @@ def render_language_video(verse: sources.Verse, day: date, out: Path, narrate: b
                   f"(first at {times[0][0]:.2f}s, last ends {times[-1][1]:.2f}s)")
             timeline = video.highlight_timeline(looks, times, seconds[0], work / "frames")
         else:
-            slide = render.render(verse, day, work / f"{verse.lang}.png", "video")
+            slide = render.render(verse, day, work / f"{verse.lang}.png", "video", scene)
             seconds = [video.reading_seconds(verse.text) + 1.5]
         track, _ = music.track_for(day, seconds[0], work)
         video.make_video([slide], seconds, out, music=track, narration=voice, timeline=timeline)
@@ -86,18 +88,22 @@ def cmd_render(args: argparse.Namespace) -> int:
         manifest = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
         if manifest and not args.force:
             verses = {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}
+            scene = IMAGES / manifest["scene"] if manifest.get("scene") else None
         else:
             try:
-                verses = sources.fetch_day(day)
+                verses, topics = sources.fetch_day(day)
             except sources.SourceError as err:
                 print(f"{day}: skipped, {err}")
                 continue
+            scene = imagery.scene_for(day, {lang: asdict(verses[lang]) for lang in ORDER}, topics, IMAGES)
             for lang in ORDER:
-                render.render(verses[lang], day, IMAGES / image_name(day, lang))
+                render.render(verses[lang], day, IMAGES / image_name(day, lang), scene=scene)
             manifest = {
                 "date": day.isoformat(),
                 "verses": {lang: asdict(verses[lang]) for lang in ORDER},
+                "topics": topics,
                 "images": {lang: image_name(day, lang) for lang in ORDER},
+                "scene": imagery.scene_name(day) if scene else None,
                 "buffer": (manifest or {}).get("buffer", {}),
             }
         # Days from before per-language videos keep their trilingual video and drafts.
@@ -108,7 +114,7 @@ def cmd_render(args: argparse.Namespace) -> int:
             narrate = narration_on()
             manifest["videos"] = {}
             for lang in ORDER:
-                render_language_video(verses[lang], day, IMAGES / language_video_name(day, lang), narrate)
+                render_language_video(verses[lang], day, IMAGES / language_video_name(day, lang), narrate, scene)
                 manifest["videos"][lang] = language_video_name(day, lang)
             manifest["narrated"] = narrate
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -161,9 +167,10 @@ def draft_jobs(
         for url, lang in zip(image_urls, ORDER, strict=True)
     ]
     for channel_id, service in carousel_channels:
+        metadata = buffer.carousel_metadata(service, ai_image=ai_label and bool(manifest.get("scene")))
         jobs.append(Job(channel_id, channel_id, service, "carousel", captions.carousel_text(verses, service),
-                        images, buffer.carousel_metadata(service), image_urls))
-    label = ai_label and manifest.get("narrated", False)
+                        images, metadata, image_urls))
+    label = ai_label and (manifest.get("narrated", False) or bool(manifest.get("scene")))
     for lang, name in manifest.get("videos", {}).items():
         url = f"{base_url}/{name}"
         clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
@@ -235,27 +242,55 @@ def cmd_prune(args: argparse.Namespace) -> int:
     return 0
 
 
+def _verses_for_preview(day: date) -> tuple[dict[str, sources.Verse], list[str]]:
+    path = manifest_path(day)
+    if path.exists():
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        return {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}, manifest.get("topics", [])
+    return sources.fetch_day(day)
+
+
 def cmd_preview(args: argparse.Namespace) -> int:
-    """Narrated videos in --out for listening, without touching the media branch or Buffer."""
-    if not speech.enabled():
+    """Test output in --out, without touching the media branch or Buffer.
+
+    --kind narration: the three narrated videos per day; --kind backgrounds: the
+    verse-matched image and the slides that would use it.
+    """
+    out_dir = Path(args.out)
+    if args.kind == "narration" and not speech.enabled():
         print("Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION to preview narration", file=sys.stderr)
         return 2
-    out_dir = Path(args.out)
+    if args.kind == "backgrounds" and not all(
+        os.environ.get(n) for n in ("AZURE_OPENAI_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_IMAGE_DEPLOYMENT")
+    ):
+        print("Set AZURE_OPENAI_KEY, AZURE_OPENAI_ENDPOINT and AZURE_IMAGE_DEPLOYMENT to preview backgrounds",
+              file=sys.stderr)
+        return 2
+    failed = False
     for day in days(args.start, args.days):
-        path = manifest_path(day)
         try:
-            verses = (
-                {lang: sources.Verse(**json.loads(path.read_text(encoding="utf-8"))["verses"][lang]) for lang in ORDER}
-                if path.exists() else sources.fetch_day(day)
-            )
+            verses, topics = _verses_for_preview(day)
         except sources.SourceError as err:
             print(f"{day}: skipped, {err}")
             continue
-        for lang in ORDER:
-            out = out_dir / f"{day}-{lang}.mp4"
-            render_language_video(verses[lang], day, out, narrate=True)
-            print(f"{day}: {out} ({speech.voices_for(day)[lang]})")
-    return 0
+        if args.kind == "narration":
+            for lang in ORDER:
+                out = out_dir / f"{day}-{lang}.mp4"
+                render_language_video(verses[lang], day, out, narrate=True)
+                print(f"{day}: {out} ({speech.voices_for(day)[lang]})")
+            continue
+        texts = {lang: asdict(verses[lang]) for lang in ORDER}
+        print(f"{day}: {verses['en'].reference}, topics {topics}")
+        try:
+            scene = imagery.generate(imagery.prompt(texts, topics), out_dir / f"{day}-scene.jpg")
+        except imagery.ImageError as err:
+            print(f"{day}: no image: {err}")
+            failed = True
+            continue
+        render.render(verses["en"], day, out_dir / f"{day}-post-en.png", scene=scene)
+        render.render(verses["ta"], day, out_dir / f"{day}-video-ta.png", "video", scene)
+        print(f"{day}: {scene.name}, overlay {imagery.shade(str(scene))}")
+    return 1 if failed else 0
 
 
 def cmd_status_page(args: argparse.Namespace) -> int:
@@ -272,7 +307,8 @@ def main() -> int:
     parser.add_argument("--days", type=int, default=3)
     parser.add_argument("--force", action="store_true", help="re-render days that already exist")
     parser.add_argument("--keep-days", type=int, default=30)
-    parser.add_argument("--out", default="preview", help="folder for preview videos")
+    parser.add_argument("--out", default="preview", help="folder for preview output")
+    parser.add_argument("--kind", choices=["narration", "backgrounds"], default="narration", help="what to preview")
     args = parser.parse_args()
     commands = {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune, "preview": cmd_preview,
                 "status-page": cmd_status_page}

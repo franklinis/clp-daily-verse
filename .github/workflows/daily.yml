@@ -57,6 +57,11 @@ jobs:
           NARRATION: ${{ vars.NARRATION }}
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: ${{ vars.AZURE_SPEECH_REGION }}
+          # Verse-matched backgrounds start once BACKGROUNDS is "ai" and Azure image settings exist.
+          BACKGROUNDS: ${{ vars.BACKGROUNDS }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AZURE_IMAGE_DEPLOYMENT: ${{ vars.AZURE_IMAGE_DEPLOYMENT }}
         run: python -m daily_verse render ${START:+--start "$START"} --days "$DAYS"
 
       - name: Publish slides

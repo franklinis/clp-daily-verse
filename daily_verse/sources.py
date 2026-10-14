@@ -90,6 +90,12 @@ def parse_dailyverses(page: str, day: date, lang_prefix: str, translation: str) 
     return html.unescape(match["ref"]).strip(), match["path"], clean(match["text"])
 
 
+def parse_topics(page: str) -> list[str]:
+    """DailyVerses.net's topic tags for the day's verse, e.g. ["eternal life", "transformation"]."""
+    block = re.search(r'<div class="vr">(.*?)</div>', page, re.S)
+    return [html.unescape(t).strip() for t in re.findall(r'class="t">([^<]+)</a>', block[1])] if block else []
+
+
 def parse_path(path: str) -> tuple[str, int, int, int]:
     """Split "/psalms/23/1-2/kjv" into ("psalms", 23, 1, 2)."""
     match = _PATH.match(path)
@@ -143,11 +149,10 @@ def german_reference(ref: str) -> str:
     return re.sub(r"^(\d) ", r"\1. ", ref).replace(":", ",")
 
 
-def fetch_day(day: date) -> dict[str, Verse]:
-    """Fetch the verse for a day in all three languages."""
-    en_ref, en_path, en_text = parse_dailyverses(
-        _get(f"{DAILYVERSES}/{day:%Y/%m/%d}/{ENGLISH_TRANSLATION}"), day, "", ENGLISH_TRANSLATION
-    )
+def fetch_day(day: date) -> tuple[dict[str, Verse], list[str]]:
+    """Fetch the verse for a day in all three languages, and its English topic tags."""
+    english_page = _get(f"{DAILYVERSES}/{day:%Y/%m/%d}/{ENGLISH_TRANSLATION}")
+    en_ref, en_path, en_text = parse_dailyverses(english_page, day, "", ENGLISH_TRANSLATION)
     de_ref, _, de_text = parse_dailyverses(
         _get(f"{DAILYVERSES}/de/{day:%Y/%m/%d}/{GERMAN_TRANSLATION}"), day, "/de", GERMAN_TRANSLATION
     )
@@ -158,8 +163,9 @@ def fetch_day(day: date) -> dict[str, Verse]:
         first,
         last,
     )
-    return {
+    verses = {
         "ta": Verse("ta", ta_ref, ta_text),
         "en": Verse("en", en_ref, en_text),
         "de": Verse("de", german_reference(de_ref), de_text),
     }
+    return verses, parse_topics(english_page)
