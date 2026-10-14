@@ -1,8 +1,8 @@
 name: Daily verse drafts
 
 # Every morning: render the carousel slides and the Reel/Short video for the days
-# DailyVerses.net has published, publish them on the `media` branch, and save
-# Buffer drafts for review.
+# DailyVerses.net has published (or the church picked in custom-verses.csv), publish
+# them on the `media` branch, and save Buffer drafts for review.
 on:
   schedule:
     # Three runs a day: GitHub can delay or skip scheduled runs when busy, and the
@@ -86,6 +86,12 @@ jobs:
           POST_TIME: ${{ vars.POST_TIME || '07:00' }}
           AI_LABEL: ${{ vars.AI_LABEL }}
         run: python -m daily_verse drafts ${START:+--start "$START"} --days "$DAYS"
+
+      - name: Tell Teams which picked days are in Buffer
+        if: ${{ always() }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: python -m daily_verse notify
 
       - name: Record draft ids
         if: ${{ always() && (vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '') }}

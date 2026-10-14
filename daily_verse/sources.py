@@ -2,7 +2,8 @@
 
 DailyVerses.net picks the verse and supplies English and German text in
 public-domain translations. The Tamil text of the same passage comes from
-tamil-bible.com, which follows the English verse numbering.
+tamil-bible.com, which follows the English verse numbering. On days the church
+picks its own verse, English and German come from the bundled texts (bible.py).
 """
 
 from __future__ import annotations
@@ -13,6 +14,8 @@ import html
 import re
 import time
 import urllib.request
+
+from . import bible
 
 DAILYVERSES = "https://dailyverses.net"
 TAMIL_BIBLE = "https://www.tamil-bible.com"
@@ -139,7 +142,10 @@ def parse_tamil(page: str, chapter: int, first: int, last: int) -> tuple[str, st
         )
         if not match:
             raise SourceError(f"tamil-bible.com has no verse {chapter}:{number}")
-        texts.append(clean(match.group(1)))
+        text = clean(match.group(1))
+        if number == 1:
+            text = re.sub(r"^\([^)]*\)\s*", "", text)  # a psalm's title, e.g. "(தாவீதின் சங்கீதம்.)"
+        texts.append(text)
     verses = str(first) if first == last else f"{first}-{last}"
     return f"{html.unescape(title.group(1)).strip()} {chapter}:{verses}", " ".join(texts)
 
@@ -169,3 +175,24 @@ def fetch_day(day: date) -> tuple[dict[str, Verse], list[str]]:
         "de": Verse("de", german_reference(de_ref), de_text),
     }
     return verses, parse_topics(english_page)
+
+
+def fetch_custom(reference: str, topics: list[str] | None = None) -> tuple[dict[str, Verse], list[str]]:
+    """A verse the church picked, e.g. "Psalm 23:1", in all three languages, with its theme words."""
+    try:
+        passage = bible.parse(reference)
+        bible.check_length(passage)
+    except bible.BibleError as err:
+        raise SourceError(str(err)) from err
+    ta_ref, ta_text = parse_tamil(
+        _get(f"{TAMIL_BIBLE}/lookup.php?Book={TAMIL_BOOKS[passage.book - 1]}&Chapter={passage.chapter}"),
+        passage.chapter,
+        passage.first,
+        passage.last,
+    )
+    verses = {
+        "ta": Verse("ta", ta_ref, ta_text),
+        "en": Verse("en", passage.english, bible.text("kjv", passage)),
+        "de": Verse("de", bible.german_reference(passage), bible.text("lu12", passage)),
+    }
+    return verses, list(topics or [])

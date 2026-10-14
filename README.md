@@ -13,7 +13,7 @@ Someone from the church reviews each draft in Buffer and approves it; nothing is
 | English | King James Version (public domain) | [DailyVerses.net](https://dailyverses.net) |
 | Deutsch | Lutherbibel 1912 (gemeinfrei) | [DailyVerses.net](https://dailyverses.net/de) |
 
-DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Every slide credits its translation, and each post's caption credits both sites.
+DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Every slide credits its translation, and each post's caption credits both sites. The church can also [pick its own verse](#your-own-verses-from-teams) for any day.
 
 ## Design
 
@@ -72,6 +72,26 @@ WhatsApp has no official way to post a Status automatically (third-party tools t
 
 Don't like a day's picture? On GitHub open **Actions → New background → Run workflow**, enter the date (YYYY-MM-DD) and run it. It paints a new image for that verse, re-renders the day's slides and videos, and updates that day's drafts in Buffer in place: same time, same approval state. Posts already published are left alone.
 
+## Your own verses (from Teams)
+
+To choose a day's verse yourself, @mention **DailyVerse** in the church's Teams channel, one line per day:
+
+```
+@DailyVerse 20.10 Psalm 23:1
+21.10 Römer 8,28 theme: hope, trust
+```
+
+- Dates can be written `20.10`, `20.10.2026`, `2026-10-20`, `20 Oct`, `tomorrow` or a weekday (`Monday`, `Montag`).
+- References can be English or German, full or abbreviated (`Ps 23:1-3`, `1 Kor 13,4-7`). A colon means English verse numbers and a comma German (Luther) ones, which differ in many Psalms: `Psalm 51:10` and `Psalm 51,12` are the same verse. Up to 6 verses that fit on a slide.
+- `theme:` words are optional; they steer the AI background.
+- `list` shows the verses picked so far, `clear 20.10` gives a day back to DailyVerses.net and `help` explains it all.
+
+DailyVerse answers in the channel within about a minute with the verse in all three languages, or with what's wrong. Picks are saved in [`custom-verses.csv`](custom-verses.csv), which can also be edited directly on GitHub. Days without a pick keep using DailyVerses.net.
+
+Pick a verse at least 3 days ahead: the slides and drafts are made then, and DailyVerse posts again when they are in Buffer. A day that's already prepared switches to the new verse (new slides, videos and background, and its Buffer drafts are updated in place), but only until its posts are approved in Buffer; after that, move them back to drafts first. The English and German texts of picked verses come from public-domain copies bundled in `daily_verse/bible/` (King James Version and Lutherbibel 1912 from [eBible.org](https://ebible.org), rebuilt with `python tools/build_bible.py`), and the caption no longer credits DailyVerses.net.
+
+The same can be done without Teams: **Actions → Set verse → Run workflow**, with the same lines.
+
 ## Days without posts
 
 `skip_days` in `church.json` lists weekdays with no verse posts (currently Sunday). Those days are not prepared, drafted or shown on the Status page.
@@ -92,6 +112,15 @@ Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule
 
 Without the API key the workflow still renders and publishes everything, but creates no drafts.
 
+### Teams (optional, for picking verses)
+
+1. **GitHub token**: on GitHub, **Settings → Developer settings → Fine-grained tokens → Generate new token**. Repository access: only `clp-daily-verse`; permissions: **Actions: Read and write**. Copy the token.
+2. **Azure Logic App** (Consumption plan; a few cents a month): create one in the Azure portal, open **Logic app code view**, paste [`teams/logic-app.json`](teams/logic-app.json), replace `PASTE-THE-GITHUB-TOKEN-HERE` with the token and save. Open the designer and copy the **HTTP URL** of the trigger.
+3. **Outgoing webhook**: in Teams, open the church team → **⋯ → Manage team → Apps → Create an outgoing webhook**. Name `DailyVerse`, callback URL = the Logic App URL. (Only works in standard channels.)
+4. **Answers in the channel**: in the same channel, **⋯ → Workflows → Send webhook alerts to a channel**, pick the team and channel, and copy the webhook URL. Add it here as the **secret** `TEAMS_WEBHOOK_URL`.
+
+The Logic App URL contains its own access key, so keep it as private as a password; anyone with it could pick verses (which still need approval in Buffer).
+
 Buffer's free plan allows 10 scheduled posts **per channel at a time**; a slot frees up as soon as a post publishes, so there is no monthly limit. Facebook and Instagram each get four posts a day (the carousel and three Reels) and YouTube three, so drafts can be approved up to two days ahead.
 
 ## Run locally
@@ -107,4 +136,4 @@ Slides and the video are written to `images/`. Use `--force` to re-render a day 
 
 ## Licensing
 
-The code is MIT licensed. The church logo and name belong to Christ the Living Petra Church e.V. The King James Version and Lutherbibel 1912 are in the public domain. Tamil texts are used under tamil-bible.com's terms: single verses, unaltered, never sold.
+The code is MIT licensed. The church logo and name belong to Christ the Living Petra Church e.V. The King James Version and Lutherbibel 1912 are in the public domain (bundled copies from eBible.org). Tamil texts are used under tamil-bible.com's terms: single verses, unaltered, never sold.

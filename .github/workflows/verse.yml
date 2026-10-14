@@ -1,0 +1,72 @@
+name: Set verse
+
+# The church's own verse for a day. Started from Teams (@DailyVerse in the church
+# channel → Azure Logic App → this workflow), or by hand: Actions → Set verse → Run workflow.
+# One line per day, e.g. "20.10 Psalm 23:1"; also "list", "clear 20.10" and "help".
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'One line per day, e.g. "20.10 Psalm 23:1" (also "list", "clear 20.10", "help")'
+        required: true
+
+permissions:
+  contents: write # save custom-verses.csv
+  actions: write # start the daily run for days that are due soon
+
+jobs:
+  verse:
+    runs-on: ubuntu-latest
+    env:
+      MEDIA_DIR: ${{ github.workspace }}/media
+      MESSAGE: ${{ inputs.message }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Check out the media branch
+        run: git fetch -q --depth 1 origin media && git worktree add -q media FETCH_HEAD || mkdir -p media
+
+      - name: Check the verses
+        id: check
+        env:
+          # To refuse days whose posts are already approved in Buffer.
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+        run: python -m daily_verse verse --message "$MESSAGE" --result "$RUNNER_TEMP/verse.json"
+
+      - name: Save them
+        id: save
+        if: steps.check.outputs.changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Another message may have been saved meanwhile, so start from the latest list each time.
+          for attempt in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            python -m daily_verse verse-apply --result "$RUNNER_TEMP/verse.json"
+            git add custom-verses.csv
+            git diff --cached --quiet && exit 0
+            git commit -qm "Custom verse from Teams"
+            git push -q origin HEAD:main && exit 0
+            sleep $((attempt * 3))
+          done
+          exit 1
+
+      - name: Prepare the slides and drafts
+        if: steps.save.outcome == 'success' && steps.check.outputs.prepare == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run daily.yml --ref main
+
+      - name: Answer in Teams
+        if: ${{ always() && steps.check.outcome == 'success' }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          SAVED: ${{ steps.save.outcome }}
+        run: python -m daily_verse verse-reply --result "$RUNNER_TEMP/verse.json"

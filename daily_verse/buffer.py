@@ -47,7 +47,7 @@ def video_metadata(service: str, title: str, ai_voice: bool = False) -> dict[str
     }[service]
 
 
-def _graphql(api_key: str, query: str, variables: dict, field: str) -> dict:
+def _request(api_key: str, query: str, variables: dict) -> dict:
     request = urllib.request.Request(
         API_URL,
         data=json.dumps({"query": query, "variables": variables}).encode(),
@@ -62,9 +62,13 @@ def _graphql(api_key: str, query: str, variables: dict, field: str) -> dict:
 
     if body.get("errors"):
         raise BufferError("; ".join(e.get("message", str(e)) for e in body["errors"]))
-    result = (body.get("data") or {}).get(field) or {}
+    return body.get("data") or {}
+
+
+def _graphql(api_key: str, query: str, variables: dict, field: str) -> dict:
+    result = _request(api_key, query, variables).get(field) or {}
     if "post" not in result:
-        raise BufferError(result.get("message", f"Unexpected response: {body}"))
+        raise BufferError(result.get("message", f"Unexpected response: {result}"))
     return result["post"]
 
 
@@ -107,4 +111,13 @@ def update_post(api_key: str, post_id: str, text: str, assets: list[dict[str, An
     """Replace a post's text, media and settings, keeping its time and whether it is approved."""
     post = _graphql(api_key, EDIT_POST,
                     {"input": {"id": post_id, "text": text, "assets": assets, "metadata": metadata}}, "editPost")
+    return post["status"]
+
+
+def post_status(api_key: str, post_id: str) -> str:
+    """"draft", "scheduled" (approved), "sent", ..."""
+    query = f"query {{ post(input: {{id: {json.dumps(post_id)}}}) {{ id status }} }}"
+    post = _request(api_key, query, {}).get("post")
+    if not post:
+        raise BufferError(f"Buffer has no post {post_id}")
     return post["status"]

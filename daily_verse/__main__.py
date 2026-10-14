@@ -6,11 +6,17 @@
     python -m daily_verse prune [--keep-days N]
     python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR [--kind narration|backgrounds]
     python -m daily_verse status-page   (phone page for sharing the videos to WhatsApp Status)
+    python -m daily_verse verse --message TEXT --result FILE   (check verses picked in Teams)
+    python -m daily_verse verse-apply --result FILE   (save them to custom-verses.csv)
+    python -m daily_verse verse-reply --result FILE   (answer in Teams)
+    python -m daily_verse notify   (tell Teams which picked or changed days are in Buffer)
 
 Each day gets YYYY/MM/DD-{ta,en,de}.png (feed carousel), YYYY/MM/DD.mp4 (Reel
 and YouTube Short) and a DD.json manifest in $MEDIA_DIR (default ./images). The
 manifest records the verse texts and the Buffer drafts already created, so
-re-running never duplicates work.
+re-running never duplicates work. Days listed in custom-verses.csv use the
+church's own verse; if a prepared day's pick changes, it is re-rendered and its
+drafts are updated.
 """
 
 from __future__ import annotations
@@ -27,7 +33,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, imagery, music, render, sources, speech, status_page, video
+from . import buffer, captions, custom, imagery, music, render, sources, speech, status_page, teams, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -92,33 +98,50 @@ def render_language_video(
 
 
 def cmd_render(args: argparse.Namespace) -> int:
+    picks = custom.load()
     for day in days(args.start, args.days):
         path = manifest_path(day)
         manifest = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
-        if manifest and not args.force:
+        pick = picks.get(day)
+        wanted = pick.reference if pick else None
+        # The church picked (or dropped) a verse after the day was prepared.
+        changed = manifest is not None and manifest.get("custom") != wanted
+        if manifest and not args.force and not changed:
             verses = {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}
             scene = IMAGES / manifest["scene"] if manifest.get("scene") else None
         else:
             try:
-                verses, topics = sources.fetch_day(day)
+                verses, topics = sources.fetch_custom(pick.reference, pick.topics) if pick else sources.fetch_day(day)
             except sources.SourceError as err:
                 print(f"{day}: skipped, {err}")
                 continue
+            if changed:
+                (IMAGES / imagery.scene_name(day)).unlink(missing_ok=True)  # a background for the new verse
             scene = imagery.scene_for(day, {lang: asdict(verses[lang]) for lang in ORDER}, topics, IMAGES)
             for lang in ORDER:
                 render.render(verses[lang], day, IMAGES / image_name(day, lang), scene=scene)
+            old = manifest or {}
             manifest = {
                 "date": day.isoformat(),
                 "verses": {lang: asdict(verses[lang]) for lang in ORDER},
                 "topics": topics,
                 "images": {lang: image_name(day, lang) for lang in ORDER},
                 "scene": imagery.scene_name(day) if scene else None,
-                "buffer": (manifest or {}).get("buffer", {}),
+                "buffer": old.get("buffer", {}),
+                **{key: old[key] for key in ("revision", "refresh", "announce") if key in old},
             }
+            if wanted:
+                manifest["custom"] = wanted
+                manifest.setdefault("announce", "new")
+            if changed:
+                # New links so no app shows the old slides, and the drafts already in Buffer get updated.
+                manifest.update(revision=old.get("revision", 0) + 1, refresh=bool(manifest["buffer"]),
+                                announce="changed" if manifest["buffer"] else "new")
         # Days from before per-language videos keep their trilingual video and drafts.
         videos = manifest.get("videos", {})
         if "video" not in manifest and (
-            args.force or set(videos) != set(ORDER) or not all((IMAGES / v).exists() for v in videos.values())
+            args.force or changed or set(videos) != set(ORDER)
+            or not all((IMAGES / v).exists() for v in videos.values())
         ):
             narrate = narration_on()
             manifest["videos"] = {}
@@ -169,6 +192,7 @@ def draft_jobs(
     `ai_label` marks narrated videos as AI-generated where Buffer supports it (Instagram, YouTube).
     """
     verses = manifest["verses"]
+    selection = not manifest.get("custom")  # credit DailyVerses.net only for its own picks
     jobs = []
     # A new background bumps the revision, so links change and no app shows a cached copy.
     version = f"?v={manifest['revision']}" if manifest.get("revision") else ""
@@ -179,15 +203,15 @@ def draft_jobs(
     ]
     for channel_id, service in carousel_channels:
         metadata = buffer.carousel_metadata(service, ai_image=ai_label and bool(manifest.get("scene")))
-        jobs.append(Job(channel_id, channel_id, service, "carousel", captions.carousel_text(verses, service),
-                        images, metadata, image_urls))
+        jobs.append(Job(channel_id, channel_id, service, "carousel",
+                        captions.carousel_text(verses, service, selection), images, metadata, image_urls))
     label = ai_label and (manifest.get("narrated", False) or bool(manifest.get("scene")))
     for lang, name in manifest.get("videos", {}).items():
         url = f"{base_url}/{name}{version}"
         clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
         for channel_id, service in video_channels:
-            text = (captions.language_youtube_description(verses, lang) if service == "youtube"
-                    else captions.language_reel_text(verses, lang, service))
+            text = (captions.language_youtube_description(verses, lang, selection) if service == "youtube"
+                    else captions.language_reel_text(verses, lang, service, selection))
             metadata = buffer.video_metadata(service, captions.language_youtube_title(verses, lang), ai_voice=label)
             jobs.append(Job(f"video-{lang}:{channel_id}", channel_id, service, f"{lang} video", text, clip,
                             metadata, [url]))
@@ -346,6 +370,159 @@ def cmd_preview(args: argparse.Namespace) -> int:
     return 1 if failed else 0
 
 
+LOCKED = {"scheduled", "sending", "sent"}
+
+
+def _locked(day: date, api_key: str | None) -> str | None:
+    """Why a day's verse can't change any more: its posts are approved (or out) in Buffer."""
+    path = manifest_path(day)
+    if not api_key or not path.exists():
+        return None
+    statuses = set()
+    for post_id in json.loads(path.read_text(encoding="utf-8")).get("buffer", {}).values():
+        try:
+            statuses.add(buffer.post_status(api_key, post_id))
+        except buffer.BufferError:
+            continue  # deleted in Buffer: nothing to protect
+    if statuses & LOCKED:
+        return (f"{teams.short_date(day)} is already approved in Buffer. To change it, move that day's posts back "
+                "to drafts in Buffer, then send this again.")
+    return None
+
+
+def _day_problem(day: date, today: date) -> str | None:
+    if day <= today:
+        return f"{teams.short_date(day)} is today or already past."
+    if not posting_day(day):
+        return f"Nothing is posted on {day:%A}s, so {teams.short_date(day)} has no verse."
+    return None
+
+
+def _when(day: date, today: date) -> str:
+    if manifest_path(day).exists():
+        return "That day's slides and Buffer drafts switch over in a few minutes."
+    if day <= today + timedelta(days=3):
+        return "Slides and Buffer drafts follow in a few minutes."
+    return f"Slides and Buffer drafts are made on {teams.short_date(day - timedelta(days=3))}."
+
+
+def check_command(command: teams.Command, picks: dict, today: date, api_key: str | None) -> dict:
+    """One line of a Teams message: what to answer and, if it's fine, what to change."""
+    if command.kind == "help":
+        return {"title": "How to pick a verse", "message": teams.HELP}
+    if command.kind == "list":
+        upcoming = sorted((day, pick) for day, pick in picks.items() if day > today)
+        lines = [f"- {teams.short_date(day)}: {pick.reference}" + (f" (theme: {pick.theme})" if pick.theme else "")
+                 for day, pick in upcoming]
+        return {"title": "Verses you've picked",
+                "message": "\n".join(lines) or "None yet; DailyVerses.net picks every day."}
+    day = command.day
+    if command.kind == "clear":
+        if day not in picks:
+            return {"title": f"{teams.short_date(day)} already uses DailyVerses.net"}
+        if problem := _day_problem(day, today) or _locked(day, api_key):
+            return {"title": f"⚠️ {teams.short_date(day)} not changed", "message": problem, "error": True}
+        return {"title": f"🗑 {teams.short_date(day)} goes back to DailyVerses.net", "message": _when(day, today),
+                "change": {"date": day.isoformat(), "clear": True}}
+    if problem := _day_problem(day, today) or _locked(day, api_key):
+        return {"title": f"⚠️ {teams.short_date(day)} not changed", "message": problem, "error": True}
+    try:
+        verses, _ = sources.fetch_custom(command.reference)
+    except sources.SourceError as err:
+        return {"title": f"⚠️ {teams.short_date(day)}: {command.reference}", "message": str(err), "error": True}
+    reference = verses["en"].reference
+    result = {"title": f"✅ {teams.short_date(day)}: {reference}", "verses": {k: asdict(v) for k, v in verses.items()},
+              "theme": command.theme}
+    if picks.get(day) == custom.Entry(reference, command.theme):
+        return {**result, "message": "Already picked for that day."}
+    return {**result, "message": _when(day, today),
+            "change": {"date": day.isoformat(), "reference": reference, "theme": command.theme}}
+
+
+def _github_output(**values: str) -> None:
+    if target := os.environ.get("GITHUB_OUTPUT"):
+        with open(target, "a", encoding="utf-8") as file:
+            file.writelines(f"{key}={value}\n" for key, value in values.items())
+
+
+def cmd_verse(args: argparse.Namespace) -> int:
+    """Check each line of a Teams message; --result gets the answers and the changes to save."""
+    today = datetime.now(TIMEZONE).date()
+    picks = custom.load()
+    api_key = os.environ.get("BUFFER_API_KEY")
+    results = []
+    for item in teams.parse_message(args.message, today):
+        if isinstance(item, teams.MessageError):
+            results.append({"title": "⚠️ I couldn't read that line", "message": str(item), "error": True})
+        else:
+            results.append(check_command(item, picks, today, api_key))
+            if change := results[-1].get("change"):  # so later lines (e.g. "list") see it
+                day = date.fromisoformat(change["date"])
+                picks = {d: e for d, e in picks.items() if d != day}
+                if not change.get("clear"):
+                    picks[day] = custom.Entry(change["reference"], change["theme"])
+        print(f"{results[-1]['title']}: {results[-1].get('message', '')}")
+    changes = [r["change"] for r in results if "change" in r]
+    soon = today + timedelta(days=3)
+    prepare = any(date.fromisoformat(c["date"]) <= soon for c in changes)
+    Path(args.result).write_text(json.dumps({"results": results, "changes": changes}, ensure_ascii=False, indent=2),
+                                 encoding="utf-8")
+    _github_output(changes=str(bool(changes)).lower(), prepare=str(prepare).lower())
+    return 0
+
+
+def cmd_verse_apply(args: argparse.Namespace) -> int:
+    """Save the checked changes into custom-verses.csv (safe to repeat)."""
+    picks = custom.load()
+    for change in json.loads(Path(args.result).read_text(encoding="utf-8"))["changes"]:
+        day = date.fromisoformat(change["date"])
+        if change.get("clear"):
+            picks.pop(day, None)
+        else:
+            picks[day] = custom.Entry(change["reference"], change.get("theme", ""))
+    custom.save(picks)
+    return 0
+
+
+def cmd_verse_reply(args: argparse.Namespace) -> int:
+    """Post the answers to the Teams channel (or print them when no webhook is set)."""
+    results = json.loads(Path(args.result).read_text(encoding="utf-8"))["results"]
+    if os.environ.get("SAVED") == "failure":
+        results.append({"title": "⚠️ Saving failed", "message": "Nothing was changed; please send it again.",
+                        "error": True})
+    message = teams.results_card(results)
+    if url := os.environ.get("TEAMS_WEBHOOK_URL"):
+        teams.post(url, message)
+    else:
+        print(json.dumps(message, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_notify(args: argparse.Namespace) -> int:
+    """Tell Teams when a picked (or changed) day is in Buffer, waiting for approval."""
+    url = os.environ.get("TEAMS_WEBHOOK_URL")
+    if not url:
+        return 0
+    base_url = os.environ.get("IMAGE_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
+    for path in sorted(IMAGES.glob("*/*/*.json")):
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if not manifest.get("announce") or not manifest.get("buffer") or manifest.get("refresh"):
+            continue
+        day = date.fromisoformat(manifest["date"])
+        version = f"?v={manifest['revision']}" if manifest.get("revision") else ""
+        try:
+            teams.post(url, teams.ready_card(day, manifest["verses"]["en"]["reference"],
+                                             f"{base_url}/{manifest['images']['en']}{version}",
+                                             len(manifest["buffer"]), manifest["announce"] == "changed"))
+        except OSError as err:
+            print(f"::warning::{day}: Teams didn't take the message ({err}); trying again next run")
+            continue
+        manifest["announce"] = False
+        path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"{day}: told Teams")
+    return 0
+
+
 def cmd_status_page(args: argparse.Namespace) -> int:
     page = status_page.build(IMAGES, datetime.now(TIMEZONE).date())
     print(f"Status page: {page}")
@@ -354,7 +531,8 @@ def cmd_status_page(args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(prog="daily_verse")
-    parser.add_argument("command", choices=["render", "drafts", "redo", "prune", "preview", "status-page"])
+    parser.add_argument("command", choices=["render", "drafts", "redo", "prune", "preview", "status-page", "verse",
+                                            "verse-apply", "verse-reply", "notify"])
     parser.add_argument("--start", type=date.fromisoformat,
                         default=datetime.now(TIMEZONE).date() + timedelta(days=1))
     parser.add_argument("--days", type=int, default=3)
@@ -362,9 +540,12 @@ def main() -> int:
     parser.add_argument("--keep-days", type=int, default=30)
     parser.add_argument("--out", default="preview", help="folder for preview output")
     parser.add_argument("--kind", choices=["narration", "backgrounds"], default="narration", help="what to preview")
+    parser.add_argument("--message", default="", help="a Teams message picking verses")
+    parser.add_argument("--result", default="verse.json", help="where verse writes its answers and changes")
     args = parser.parse_args()
     commands = {"render": cmd_render, "drafts": cmd_drafts, "redo": cmd_redo, "prune": cmd_prune,
-                "preview": cmd_preview, "status-page": cmd_status_page}
+                "preview": cmd_preview, "status-page": cmd_status_page, "verse": cmd_verse,
+                "verse-apply": cmd_verse_apply, "verse-reply": cmd_verse_reply, "notify": cmd_notify}
     return commands[args.command](args)
 
 

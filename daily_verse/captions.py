@@ -19,6 +19,11 @@ TRANSLATION = {"ta": "", "en": " (KJV)", "de": " (Lutherbibel 1912)"}
 Verses = dict[str, dict[str, str]]
 
 
+def credits(text: str, selection: bool = True) -> str:
+    """The credit line; without "Verse selection: DailyVerses.net" on days the church picked the verse."""
+    return text if selection else " · ".join(part for part in text.split(" · ") if "DailyVerses" not in part)
+
+
 def _header(verses: Verses) -> list[str]:
     return [
         "இன்றைய வசனம் · Verse of the Day · Vers des Tages",
@@ -46,7 +51,7 @@ def _hashtags(service: str) -> str:
 INSTAGRAM_LIMIT = 2200
 
 
-def carousel_text(verses: Verses, service: str) -> str:
+def carousel_text(verses: Verses, service: str, selection: bool = True) -> str:
     """Instagram / Facebook feed post: the verse in all three languages.
 
     If a long passage would pass Instagram's caption limit, German and then
@@ -60,7 +65,7 @@ def carousel_text(verses: Verses, service: str) -> str:
             *(line for lang in shown for line in (_quoted(verses, lang), "")),
             "Swipe ➜ தமிழ் · English · Deutsch", "",
             *_invitation(website), "",
-            CREDITS, "",
+            credits(CREDITS, selection), "",
             _hashtags(service),
         ])
         if len(text) <= INSTAGRAM_LIMIT:
@@ -75,7 +80,7 @@ def _website(service: str) -> str:
     return CHURCH["website"] if service == "facebook" else CHURCH["website"].removeprefix("https://")
 
 
-def language_reel_text(verses: Verses, lang: str, service: str) -> str:
+def language_reel_text(verses: Verses, lang: str, service: str, selection: bool = True) -> str:
     """Instagram / Facebook Reel for one language: verse, invitation, credits, hashtags."""
     tags = CHURCH["language_hashtags"][lang][: 3 if service == "facebook" else 5]
     return "\n".join([
@@ -85,7 +90,7 @@ def language_reel_text(verses: Verses, lang: str, service: str) -> str:
         f"🙏 {CHURCH['invitation'][lang]}",
         f"📍 {CHURCH['address']} · {_website(service)}",
         f"💬 {CHURCH['share'][lang]}", "",
-        CHURCH["credits"][lang], "",
+        credits(CHURCH["credits"][lang], selection), "",
         " ".join(tags),
     ])
 
@@ -96,7 +101,7 @@ def language_youtube_title(verses: Verses, lang: str) -> str:
     return title if len(title) <= 100 else f"{CHURCH['label'][lang]} #shorts"
 
 
-def language_youtube_description(verses: Verses, lang: str) -> str:
+def language_youtube_description(verses: Verses, lang: str, selection: bool = True) -> str:
     """The verse, the church's schedule and links, all in one language."""
     lines = [
         CHURCH["label"][lang], "",
@@ -107,7 +112,7 @@ def language_youtube_description(verses: Verses, lang: str) -> str:
         f"🔗 {CHURCH['website']}",
         f"👍 {CHURCH['facebook']}",
         f"📷 {CHURCH['instagram']}", "",
-        CHURCH["credits"][lang], "",
+        credits(CHURCH["credits"][lang], selection), "",
         " ".join(CHURCH["language_hashtags"][lang][:3]),
     ]
     return "\n".join(lines)

@@ -1,0 +1,99 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "githubToken": {
+        "type": "SecureString",
+        "defaultValue": ""
+      }
+    },
+    "triggers": {
+      "Teams_message": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "method": "POST",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "Start_Set_verse": {
+        "type": "Http",
+        "runAfter": {},
+        "inputs": {
+          "method": "POST",
+          "uri": "https://api.github.com/repos/franklinis/clp-daily-verse/actions/workflows/verse.yml/dispatches",
+          "headers": {
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer @{parameters('githubToken')}",
+            "User-Agent": "clp-daily-verse-teams",
+            "X-GitHub-Api-Version": "2022-11-28"
+          },
+          "body": {
+            "ref": "main",
+            "inputs": {
+              "message": "@coalesce(triggerBody()?['text'], '')"
+            }
+          },
+          "retryPolicy": {
+            "type": "none"
+          }
+        }
+      },
+      "Reply": {
+        "type": "Response",
+        "kind": "Http",
+        "runAfter": {
+          "Start_Set_verse": [
+            "Succeeded"
+          ]
+        },
+        "inputs": {
+          "statusCode": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "type": "message",
+            "text": "📖 Got it, checking now. The answer follows in this channel in about a minute."
+          }
+        }
+      },
+      "Reply_failed": {
+        "type": "Response",
+        "kind": "Http",
+        "runAfter": {
+          "Start_Set_verse": [
+            "Failed",
+            "TimedOut"
+          ]
+        },
+        "inputs": {
+          "statusCode": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "type": "message",
+            "text": "⚠️ I couldn't reach GitHub (HTTP @{outputs('Start_Set_verse')?['statusCode']}). Please try again later."
+          }
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {
+    "githubToken": {
+      "value": "PASTE-THE-GITHUB-TOKEN-HERE"
+    }
+  }
+}
