@@ -96,9 +96,10 @@ def prompt(verses: dict[str, dict[str, str]], topics: list[str], day: date | Non
         "Create a background image for a daily Bible verse post.\n"
         f'Verse: "{english["text"]}" ({english["reference"]}).{themes}\n'
         "Choose one clear, specific image that captures this verse's meaning, for example flowing water, "
-        "a path, a harvest field, a lamp, bread, a rock, a vine, a shepherd's meadow or a sky full of stars, "
-        "and vary the setting (forest, mountains, coast, desert, meadow, garden, river, sky); avoid a generic "
-        "misty landscape.\n"
+        "a path, a harvest field, a lamp, bread, a rock, a vine, a shepherd's meadow or a sky full of stars. "
+        "If the verse names or implies a setting (a field, water, a building, sheep, a harvest), use it; "
+        "otherwise vary the setting (forest, mountains, coast, desert, meadow, garden, river, sky). "
+        "Avoid a generic misty landscape.\n"
         f"{direction}"
         f"Style: {CHURCH.get('image_style', 'cinematic nature photography')}.\n"
         f"{RULES}"
