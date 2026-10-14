@@ -1,0 +1,91 @@
+name: New background
+
+# The "new background" button: Actions → New background → Run workflow, enter the date.
+# Paints a new verse-matched image for that day, re-renders its slides and videos, and
+# updates the day's Buffer drafts in place (same time, same approval state).
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date to redo (YYYY-MM-DD)"
+        required: true
+      days:
+        description: "How many days from that date"
+        required: false
+        default: "1"
+
+permissions:
+  contents: write
+
+concurrency: daily-verse
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    env:
+      MEDIA_DIR: ${{ github.workspace }}/media
+      START: ${{ inputs.date }}
+      DAYS: ${{ inputs.days || '1' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install ffmpeg
+        run: pip install -r requirements.txt
+
+      - name: Check out the media branch
+        run: |
+          if git fetch origin media; then
+            git worktree add media FETCH_HEAD
+          else
+            git worktree add --detach media
+            git -C media rm -rq --cached . && git -C media clean -fdq
+          fi
+
+      - name: Paint a new background and re-render
+        env:
+          # Read-aloud starts once NARRATION is "on" and the Azure key is set.
+          NARRATION: ${{ vars.NARRATION }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ vars.AZURE_SPEECH_REGION }}
+          # Verse-matched backgrounds start once BACKGROUNDS is "ai" and Azure image settings exist.
+          BACKGROUNDS: ${{ vars.BACKGROUNDS }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AZURE_IMAGE_DEPLOYMENT: ${{ vars.AZURE_IMAGE_DEPLOYMENT }}
+        run: python -m daily_verse redo --start "$START" --days "$DAYS"
+
+      - name: Publish slides
+        run: |
+          python -m daily_verse prune --keep-days 14
+          python -m daily_verse status-page
+          cd media
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # One commit holding only the last 14 days, so the repo never grows.
+          git checkout -q --orphan publish
+          git add -A
+          git commit -qm "New background for $START" --allow-empty
+          git push -qf origin publish:media
+
+      - name: Update the Buffer drafts
+        if: ${{ vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '' }}
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_CHANNELS: ${{ vars.BUFFER_CHANNELS }}
+          BUFFER_VIDEO_CHANNELS: ${{ vars.BUFFER_VIDEO_CHANNELS }}
+          POST_TIME: ${{ vars.POST_TIME || '07:00' }}
+          AI_LABEL: ${{ vars.AI_LABEL }}
+        run: python -m daily_verse drafts --start "$START" --days "$DAYS"
+
+      - name: Record draft ids
+        if: ${{ always() && (vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '') }}
+        run: |
+          cd media
+          git add -A
+          git diff --cached --quiet || (git commit -qm "Record Buffer drafts" && git push -qf origin publish:media)

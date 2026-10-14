@@ -2,6 +2,7 @@
 
     python -m daily_verse render [--start YYYY-MM-DD] [--days N] [--force]
     python -m daily_verse drafts [--start YYYY-MM-DD] [--days N]
+    python -m daily_verse redo --start YYYY-MM-DD [--days N]   (new background, then drafts refresh)
     python -m daily_verse prune [--keep-days N]
     python -m daily_verse preview [--start YYYY-MM-DD] [--days N] --out DIR [--kind narration|backgrounds]
     python -m daily_verse status-page   (phone page for sharing the videos to WhatsApp Status)
@@ -42,8 +43,16 @@ def image_name(day: date, lang: str) -> str:
     return f"{day:%Y/%m/%d}-{lang}.png"
 
 
+WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+
+def posting_day(day: date) -> bool:
+    """False on weekdays listed in church.json's skip_days (Sundays): nothing is prepared then."""
+    return WEEKDAYS[day.weekday()] not in {d.lower() for d in captions.CHURCH.get("skip_days", [])}
+
+
 def days(start: date, count: int) -> list[date]:
-    return [start + timedelta(days=i) for i in range(count)]
+    return [d for d in (start + timedelta(days=i) for i in range(count)) if posting_day(d)]
 
 
 def narration_on() -> bool:
@@ -161,7 +170,9 @@ def draft_jobs(
     """
     verses = manifest["verses"]
     jobs = []
-    image_urls = [f"{base_url}/{manifest['images'][lang]}" for lang in ORDER]
+    # A new background bumps the revision, so links change and no app shows a cached copy.
+    version = f"?v={manifest['revision']}" if manifest.get("revision") else ""
+    image_urls = [f"{base_url}/{manifest['images'][lang]}{version}" for lang in ORDER]
     images = [
         {"image": {"url": url, "metadata": {"altText": f"{verses[lang]['reference']}: {verses[lang]['text']}"}}}
         for url, lang in zip(image_urls, ORDER, strict=True)
@@ -172,7 +183,7 @@ def draft_jobs(
                         images, metadata, image_urls))
     label = ai_label and (manifest.get("narrated", False) or bool(manifest.get("scene")))
     for lang, name in manifest.get("videos", {}).items():
-        url = f"{base_url}/{name}"
+        url = f"{base_url}/{name}{version}"
         clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
         for channel_id, service in video_channels:
             text = (captions.language_youtube_description(verses, lang) if service == "youtube"
@@ -207,12 +218,23 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             continue
         manifest = json.loads(path.read_text(encoding="utf-8"))
         due_at = datetime.combine(day, post_time, TIMEZONE)
-        pending = [
-            job for job in draft_jobs(manifest, base_url, carousel_channels, video_channels, ai_label)
-            if job.key not in manifest["buffer"]
-        ]
-        for url in dict.fromkeys(url for job in pending for url in job.urls):
+        jobs = draft_jobs(manifest, base_url, carousel_channels, video_channels, ai_label)
+        pending = [job for job in jobs if job.key not in manifest["buffer"]]
+        # After a new background, drafts already in Buffer get the new slides, videos and text.
+        refresh = [job for job in jobs if job.key in manifest["buffer"]] if manifest.get("refresh") else []
+        for url in dict.fromkeys(url for job in pending + refresh for url in job.urls):
             wait_until_public(url)
+        refreshed = True
+        for job in refresh:
+            try:
+                status = buffer.update_post(api_key, manifest["buffer"][job.key], job.text, job.assets, job.metadata)
+                print(f"{day} {job.service} {job.kind}: updated ({status})")
+            except buffer.BufferError as err:
+                # Posts already published can't change; everything else should.
+                print(f"::warning::{day} {job.service} {job.kind}: not updated: {err}")
+                refreshed = False
+        if refresh and refreshed:
+            manifest["refresh"] = False
         for job in pending:
             try:
                 post_id = buffer.create_draft(api_key, job.channel_id, job.text, job.assets, job.metadata, due_at)
@@ -223,6 +245,37 @@ def cmd_drafts(args: argparse.Namespace) -> int:
             manifest["buffer"][job.key] = post_id
             print(f"{day} {job.service} {job.kind}: draft {post_id}")
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return 1 if failed else 0
+
+
+def cmd_redo(args: argparse.Namespace) -> int:
+    """A new verse-matched background for each day: re-render its slides and videos, then refresh its drafts."""
+    if not imagery.enabled():
+        print("Set BACKGROUNDS=ai and the Azure image settings to make new backgrounds", file=sys.stderr)
+        return 2
+    failed = False
+    for day in days(args.start, args.days):
+        path = manifest_path(day)
+        if not path.exists():
+            print(f"{day}: not prepared yet, nothing to redo")
+            continue
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        verses = {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}
+        (IMAGES / imagery.scene_name(day)).unlink(missing_ok=True)
+        scene = imagery.scene_for(day, manifest["verses"], manifest.get("topics", []), IMAGES)
+        if not scene:
+            failed = True
+            continue
+        for lang in ORDER:
+            render.render(verses[lang], day, IMAGES / image_name(day, lang), scene=scene)
+        if "videos" in manifest:
+            narrate = narration_on()
+            for lang in ORDER:
+                render_language_video(verses[lang], day, IMAGES / language_video_name(day, lang), narrate, scene)
+            manifest["narrated"] = narrate
+        manifest.update(scene=imagery.scene_name(day), revision=manifest.get("revision", 0) + 1, refresh=True)
+        path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"{day}: new background ({verses['en'].reference}), revision {manifest['revision']}")
     return 1 if failed else 0
 
 
@@ -301,7 +354,7 @@ def cmd_status_page(args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(prog="daily_verse")
-    parser.add_argument("command", choices=["render", "drafts", "prune", "preview", "status-page"])
+    parser.add_argument("command", choices=["render", "drafts", "redo", "prune", "preview", "status-page"])
     parser.add_argument("--start", type=date.fromisoformat,
                         default=datetime.now(TIMEZONE).date() + timedelta(days=1))
     parser.add_argument("--days", type=int, default=3)
@@ -310,8 +363,8 @@ def main() -> int:
     parser.add_argument("--out", default="preview", help="folder for preview output")
     parser.add_argument("--kind", choices=["narration", "backgrounds"], default="narration", help="what to preview")
     args = parser.parse_args()
-    commands = {"render": cmd_render, "drafts": cmd_drafts, "prune": cmd_prune, "preview": cmd_preview,
-                "status-page": cmd_status_page}
+    commands = {"render": cmd_render, "drafts": cmd_drafts, "redo": cmd_redo, "prune": cmd_prune,
+                "preview": cmd_preview, "status-page": cmd_status_page}
     return commands[args.command](args)
 
 

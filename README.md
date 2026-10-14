@@ -68,6 +68,14 @@ Service times, address, links, invitation wording and hashtags live in [`church.
 
 WhatsApp has no official way to post a Status automatically (third-party tools that claim to do it connect like WhatsApp Web, which breaks WhatsApp's terms and can get the number banned). Instead, **https://franklinis.github.io/clp-daily-verse/** lists the day's videos with a **Share to Status** button: tap it, choose WhatsApp, then *My status*. **Copy caption** puts the label, reference and website on the clipboard for the Status text. The page is rebuilt by every run (`python -m daily_verse status-page`) and can be added to the phone's home screen.
 
+## New background for a day
+
+Don't like a day's picture? On GitHub open **Actions → New background → Run workflow**, enter the date (YYYY-MM-DD) and run it. It paints a new image for that verse, re-renders the day's slides and videos, and updates that day's drafts in Buffer in place: same time, same approval state. Posts already published are left alone.
+
+## Days without posts
+
+`skip_days` in `church.json` lists weekdays with no verse posts (currently Sunday). Those days are not prepared, drafted or shown on the Status page.
+
 ## Reviewing drafts
 
 Open Buffer → **Drafts**. Check the slides and caption, then choose **Schedule** (keeps the 07:00 time) or edit the time first. Delete a draft to skip a day.

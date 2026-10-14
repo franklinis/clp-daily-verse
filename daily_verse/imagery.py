@@ -132,6 +132,8 @@ def generate(text: str, out: Path) -> Path:
         raise ImageError(f"Azure image generation returned HTTP {err.code}: {detail}") from err
     except OSError as err:
         raise ImageError(f"Azure image generation unreachable: {err}") from err
+    if usage := data.get("usage"):  # for cost tracking in the run log
+        print(f"Image tokens: {json.dumps(usage)}")
     try:
         image = base64.b64decode(data["data"][0]["b64_json"])
     except (KeyError, IndexError, TypeError, ValueError) as err:

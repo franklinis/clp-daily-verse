@@ -47,6 +47,27 @@ def video_metadata(service: str, title: str, ai_voice: bool = False) -> dict[str
     }[service]
 
 
+def _graphql(api_key: str, query: str, variables: dict, field: str) -> dict:
+    request = urllib.request.Request(
+        API_URL,
+        data=json.dumps({"query": query, "variables": variables}).encode(),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            body = json.load(response)
+    except urllib.error.HTTPError as err:
+        raise BufferError(f"Buffer returned HTTP {err.code}: {err.read().decode(errors='replace')}") from err
+
+    if body.get("errors"):
+        raise BufferError("; ".join(e.get("message", str(e)) for e in body["errors"]))
+    result = (body.get("data") or {}).get(field) or {}
+    if "post" not in result:
+        raise BufferError(result.get("message", f"Unexpected response: {body}"))
+    return result["post"]
+
+
 def create_draft(
     api_key: str,
     channel_id: str,
@@ -69,21 +90,21 @@ def create_draft(
         "assets": assets,
         "metadata": metadata,
     }
-    request = urllib.request.Request(
-        API_URL,
-        data=json.dumps({"query": CREATE_POST, "variables": {"input": post_input}}).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=60) as response:
-            body = json.load(response)
-    except urllib.error.HTTPError as err:
-        raise BufferError(f"Buffer returned HTTP {err.code}: {err.read().decode(errors='replace')}") from err
+    return _graphql(api_key, CREATE_POST, {"input": post_input}, "createPost")["id"]
 
-    if body.get("errors"):
-        raise BufferError("; ".join(e.get("message", str(e)) for e in body["errors"]))
-    result = (body.get("data") or {}).get("createPost") or {}
-    if "post" not in result:
-        raise BufferError(result.get("message", f"Unexpected response: {body}"))
-    return result["post"]["id"]
+
+EDIT_POST = """
+mutation EditDraft($input: EditPostInput!) {
+  editPost(input: $input) {
+    ... on PostActionSuccess { post { id status } }
+    ... on MutationError { message }
+  }
+}
+"""
+
+
+def update_post(api_key: str, post_id: str, text: str, assets: list[dict[str, Any]], metadata: dict[str, Any]) -> str:
+    """Replace a post's text, media and settings, keeping its time and whether it is approved."""
+    post = _graphql(api_key, EDIT_POST,
+                    {"input": {"id": post_id, "text": text, "assets": assets, "metadata": metadata}}, "editPost")
+    return post["status"]
