@@ -36,22 +36,22 @@ def test_instagram_limits() -> None:
 
 def test_language_reels_are_entirely_in_one_language() -> None:
     tamil = captions.language_reel_text(VERSES, "ta", "instagram")
-    assert tamil.startswith("இன்றைய தேவ வார்த்தை\n📖 லேவியராகமம் 20:26")
+    assert tamil.startswith("இன்றைய வசனம்\n📖 லேவியராகமம் 20:26")
     assert "கர்த்தராகிய நான்" in tamil and "And ye shall" not in tamil and "Darum" not in tamil
     assert "ஞாயிறு ஆராதனை காலை 9:00" in tamil and "#TamilBible" in tamil
 
     german = captions.language_reel_text(VERSES, "de", "facebook")
-    assert german.startswith("Gottes Wort für heute\n📖 3. Mose 20,26")
+    assert german.startswith("Vers des Tages\n📖 3. Mose 20,26")
     assert "\u201eDarum sollt ihr mir heilig sein.\u201c" in german
     assert "Gottesdienst sonntags 9:00 Uhr (auf Tamil)" in german
     assert "https://christ-livingpetra.de" in german and german.count("#") == 3
 
 
 def test_language_youtube_title_and_description() -> None:
-    assert captions.language_youtube_title(VERSES, "de") == "3. Mose 20,26 | Gottes Wort für heute #shorts"
-    assert captions.language_youtube_title(VERSES, "ta") == "லேவியராகமம் 20:26 | இன்றைய தேவ வார்த்தை #shorts"
+    assert captions.language_youtube_title(VERSES, "de") == "3. Mose 20,26 | Vers des Tages #shorts"
+    assert captions.language_youtube_title(VERSES, "ta") == "லேவியராகமம் 20:26 | இன்றைய வசனம் #shorts"
     description = captions.language_youtube_description(VERSES, "en")
-    assert "Word of God for Today\n\nLeviticus 20:26\nAnd ye shall be holy unto me." in description
+    assert "Verse of the Day\n\nLeviticus 20:26\nAnd ye shall be holy unto me." in description
     assert "Sunday School (Tamil & English) · 9:45 AM" in description
     assert "Kindergottesdienst" not in description and "கர்த்தராகிய" not in description
     assert captions.CHURCH["facebook"] in description
@@ -70,4 +70,4 @@ def test_no_bible_or_source_credits_in_any_post() -> None:
     for text in texts:
         for credit in ("DailyVerses", "tamil-bible.com", "King James", "KJV", "Lutherbibel"):
             assert credit not in text
-    assert texts[0].startswith("இன்றைய தேவ வார்த்தை · Word of God for Today · Gottes Wort für heute\n")
+    assert texts[0].startswith("இன்றைய வசனம் · Verse of the Day · Vers des Tages\n")

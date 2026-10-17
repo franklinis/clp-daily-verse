@@ -87,7 +87,7 @@ def language_reel_text(verses: Verses, lang: str, service: str) -> str:
 
 
 def language_youtube_title(verses: Verses, lang: str) -> str:
-    """e.g. "Psalm 119,14 | Gottes Wort für heute #shorts" (YouTube allows 100 characters)."""
+    """e.g. "Psalm 119,14 | Vers des Tages #shorts" (YouTube allows 100 characters)."""
     title = f"{verses[lang]['reference']} | {CHURCH['label'][lang]} #shorts"
     return title if len(title) <= 100 else f"{CHURCH['label'][lang]} #shorts"
 

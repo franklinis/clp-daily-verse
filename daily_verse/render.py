@@ -23,7 +23,7 @@ from .sources import Verse
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = Template((Path(__file__).parent / "template.html").read_text(encoding="utf-8"))
 LOGO = ROOT / "assets" / "logo-white.png"
-# The slide title ("Word of God for Today") comes from church.json, like the captions.
+# The slide title ("Verse of the Day") comes from church.json, like the captions.
 CHURCH_LABELS = json.loads((ROOT / "church.json").read_text(encoding="utf-8"))["label"]
 
 LANGUAGES = {

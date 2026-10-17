@@ -13,7 +13,7 @@ Someone from the church reviews each draft in Buffer and approves it; nothing is
 | English | King James Version (public domain) | [DailyVerses.net](https://dailyverses.net) |
 | Deutsch | Lutherbibel 1912 (gemeinfrei) | [DailyVerses.net](https://dailyverses.net/de) |
 
-DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Slides and captions carry the title **Word of God for Today** (இன்றைய தேவ வார்த்தை · Gottes Wort für heute, `label` in `church.json`) and no source credits: none of the sources requires one (see [Licensing](#licensing)). The church can also [pick its own verse](#your-own-verses-from-teams) for any day.
+DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Slides and captions carry the title **Verse of the Day** (இன்றைய வசனம் · Vers des Tages, `label` in `church.json`) and no source credits: none of the sources requires one (see [Licensing](#licensing)). The church can also [pick its own verse](#your-own-verses-from-teams) for any day.
 
 ## Design
 
