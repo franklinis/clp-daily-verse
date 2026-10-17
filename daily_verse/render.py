@@ -23,15 +23,15 @@ from .sources import Verse
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = Template((Path(__file__).parent / "template.html").read_text(encoding="utf-8"))
 LOGO = ROOT / "assets" / "logo-white.png"
+# The slide title ("Word of God for Today") comes from church.json, like the captions.
+CHURCH_LABELS = json.loads((ROOT / "church.json").read_text(encoding="utf-8"))["label"]
 
 LANGUAGES = {
     "ta": {
-        "label": "இன்றைய வசனம்",
         "days": ["திங்கள்", "செவ்வாய்", "புதன்", "வியாழன்", "வெள்ளி", "சனி", "ஞாயிறு"],
         "months": ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை",
                    "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"],
         "date": "{day}, {d} {month} {y}",
-        "credit": "பரிசுத்த வேதாகமம் · tamil-bible.com",
         "quotes": ("“", "”"),
         "serif": "'Noto Serif Tamil', serif",
         "sans": "'Noto Sans Tamil', 'Roboto', sans-serif",
@@ -40,12 +40,10 @@ LANGUAGES = {
         "label_spacing": ".02em",
     },
     "en": {
-        "label": "Verse of the Day",
         "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         "months": ["January", "February", "March", "April", "May", "June", "July",
                    "August", "September", "October", "November", "December"],
         "date": "{day}, {d} {month} {y}",
-        "credit": "King James Version · Public domain",
         "quotes": ("“", "”"),
         "serif": "'Noto Serif', serif",
         "sans": "'Roboto', sans-serif",
@@ -54,12 +52,10 @@ LANGUAGES = {
         "label_spacing": ".22em",
     },
     "de": {
-        "label": "Vers des Tages",
         "days": ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
         "months": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
                    "August", "September", "Oktober", "November", "Dezember"],
         "date": "{day}, {d}. {month} {y}",
-        "credit": "Lutherbibel 1912 · gemeinfrei",
         "quotes": ("„", "“"),
         "serif": "'Noto Serif', serif",
         "sans": "'Roboto', sans-serif",
@@ -129,7 +125,7 @@ def build_html(verse: Verse, day: date, fmt: str = "post", scene: Path | None = 
         line_height=cfg["line_height"],
         label_spacing=cfg["label_spacing"],
         logo=LOGO.as_uri(),
-        label=html.escape(cfg["label"]),
+        label=html.escape(CHURCH_LABELS[verse.lang]),
         date=html.escape(cfg["date"].format(
             day=cfg["days"][day.weekday()], d=day.day, month=cfg["months"][day.month - 1], y=day.year
         )),
@@ -138,7 +134,6 @@ def build_html(verse: Verse, day: date, fmt: str = "post", scene: Path | None = 
         # Each word in its own span so narrated videos can light words up as they are read.
         text=" ".join(f'<span class="w">{html.escape(word)}</span>' for word in verse.text.split()),
         reference=html.escape(verse.reference),
-        credit=html.escape(cfg["credit"]).replace(" ", "&nbsp;").replace("&nbsp;·&nbsp;", " · "),
     )
 
 

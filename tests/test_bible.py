@@ -2,7 +2,7 @@
 
 import pytest
 
-from daily_verse import bible, captions, custom
+from daily_verse import bible, custom
 from daily_verse.bible import BibleError, Passage
 
 
@@ -78,13 +78,6 @@ def test_long_passages_are_refused() -> None:
     bible.check_length(bible.parse("John 3:16"))
     with pytest.raises(BibleError, match="characters"):
         bible.check_length(bible.parse("Esther 8:9"))
-
-
-def test_credits_drop_dailyverses_on_the_church_s_own_picks() -> None:
-    line = "Bibel: Lutherbibel 1912 · Versauswahl: DailyVerses.net"
-    assert captions.credits(line) == line
-    assert captions.credits(line, selection=False) == "Bibel: Lutherbibel 1912"
-    assert captions.credits(captions.CREDITS, selection=False).endswith("Lutherbibel 1912")
 
 
 def test_custom_verses_round_trip(tmp_path) -> None:

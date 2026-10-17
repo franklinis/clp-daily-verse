@@ -30,6 +30,6 @@ def test_page_lists_days_with_per_language_videos(tmp_path: Path) -> None:
     assert [d["date"] for d in data["days"]] == ["2026-10-15"]
     tamil = data["days"][0]["items"][0]
     assert tamil["video"] == "2026/10/15-ta.mp4" and tamil["language"] == "தமிழ்"
-    assert tamil["caption"] == "இன்றைய வசனம் · சங்கீதம் 119:14\nchrist-livingpetra.de"
+    assert tamil["caption"] == "இன்றைய தேவ வார்த்தை · சங்கீதம் 119:14\nchrist-livingpetra.de"
     assert (tmp_path / "icon.png").exists() and (tmp_path / ".nojekyll").exists()
     assert json.loads((tmp_path / "manifest.webmanifest").read_text())["short_name"] == "Daily Verse"

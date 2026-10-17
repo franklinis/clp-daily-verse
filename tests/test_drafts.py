@@ -30,7 +30,7 @@ def test_carousel_plus_a_video_per_language_per_channel() -> None:
     assert len(jobs) == 2 + 3 * 3
     assert len({job.key for job in jobs}) == len(jobs)
     youtube_de = next(job for job in jobs if job.key == "video-de:yt1")
-    assert youtube_de.metadata["youtube"]["title"] == "Psalm 119,14 | Vers des Tages #shorts"
+    assert youtube_de.metadata["youtube"]["title"] == "Psalm 119,14 | Gottes Wort für heute #shorts"
     assert youtube_de.metadata["youtube"]["isAiGenerated"] is True
     assert youtube_de.urls == ["https://m/2026/10/16-de.mp4"]
     reel_ta = next(job for job in jobs if job.key == "video-ta:ig1")

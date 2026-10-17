@@ -13,7 +13,7 @@ Someone from the church reviews each draft in Buffer and approves it; nothing is
 | English | King James Version (public domain) | [DailyVerses.net](https://dailyverses.net) |
 | Deutsch | Lutherbibel 1912 (gemeinfrei) | [DailyVerses.net](https://dailyverses.net/de) |
 
-DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Every slide credits its translation, and each post's caption credits both sites. The church can also [pick its own verse](#your-own-verses-from-teams) for any day.
+DailyVerses.net chooses the verse. The English and German texts come from its pages for that date, and the Tamil text of the same passage comes from tamil-bible.com. Slides and captions carry the title **Word of God for Today** (இன்றைய தேவ வார்த்தை · Gottes Wort für heute, `label` in `church.json`) and no source credits: none of the sources requires one (see [Licensing](#licensing)). The church can also [pick its own verse](#your-own-verses-from-teams) for any day.
 
 ## Design
 
@@ -136,4 +136,4 @@ Slides and the video are written to `images/`. Use `--force` to re-render a day 
 
 ## Licensing
 
-The code is MIT licensed. The church logo and name belong to Christ the Living Petra Church e.V. The King James Version and Lutherbibel 1912 are in the public domain (bundled copies from eBible.org). Tamil texts are used under tamil-bible.com's terms: single verses, unaltered, never sold.
+The code is MIT licensed. The church logo and name belong to Christ the Living Petra Church e.V. The King James Version and Lutherbibel 1912 are in the public domain (bundled copies from eBible.org). Tamil texts are used under tamil-bible.com's terms: single verses, unaltered, never sold; the terms don't ask for credit. DailyVerses.net publishes no reuse terms; its daily choice of reference is used, while the KJV and Luther texts themselves are public domain.

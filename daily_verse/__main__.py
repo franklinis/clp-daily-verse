@@ -192,7 +192,6 @@ def draft_jobs(
     `ai_label` marks narrated videos as AI-generated where Buffer supports it (Instagram, YouTube).
     """
     verses = manifest["verses"]
-    selection = not manifest.get("custom")  # credit DailyVerses.net only for its own picks
     jobs = []
     # A new background bumps the revision, so links change and no app shows a cached copy.
     version = f"?v={manifest['revision']}" if manifest.get("revision") else ""
@@ -204,14 +203,14 @@ def draft_jobs(
     for channel_id, service in carousel_channels:
         metadata = buffer.carousel_metadata(service, ai_image=ai_label and bool(manifest.get("scene")))
         jobs.append(Job(channel_id, channel_id, service, "carousel",
-                        captions.carousel_text(verses, service, selection), images, metadata, image_urls))
+                        captions.carousel_text(verses, service), images, metadata, image_urls))
     label = ai_label and (manifest.get("narrated", False) or bool(manifest.get("scene")))
     for lang, name in manifest.get("videos", {}).items():
         url = f"{base_url}/{name}{version}"
         clip = [{"video": {"url": url, "metadata": {"thumbnailOffset": 500}}}]
         for channel_id, service in video_channels:
-            text = (captions.language_youtube_description(verses, lang, selection) if service == "youtube"
-                    else captions.language_reel_text(verses, lang, service, selection))
+            text = (captions.language_youtube_description(verses, lang) if service == "youtube"
+                    else captions.language_reel_text(verses, lang, service))
             metadata = buffer.video_metadata(service, captions.language_youtube_title(verses, lang), ai_voice=label)
             jobs.append(Job(f"video-{lang}:{channel_id}", channel_id, service, f"{lang} video", text, clip,
                             metadata, [url]))
