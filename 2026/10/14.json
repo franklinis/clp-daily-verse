@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-14",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "லேவியராகமம் 20:26",
+      "text": "கர்த்தராகிய நான் பரிசுத்தராயிருக்கிறபடியினாலே நீங்களும் எனக்கேற்ற பரிசுத்தவான்களாயிருப்பீர்களாக; நீங்கள் என்னுடையவர்களாயிருக்கும்படிக்கு, உங்களை மற்ற ஜனங்களை விட்டுப் பிரித்தெடுத்தேன்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Leviticus 20:26",
+      "text": "And ye shall be holy unto me: for I the LORD am holy, and have severed you from other people, that ye should be mine."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "3. Mose 20,26",
+      "text": "Darum sollt ihr mir heilig sein; denn ich, der HERR, bin heilig, der euch abgesondert hat von den Völkern, daß ihr mein wäret."
+    }
+  },
+  "images": {
+    "ta": "2026/10/14-ta.png",
+    "en": "2026/10/14-en.png",
+    "de": "2026/10/14-de.png"
+  },
+  "buffer": {
+    "69a690193f3b94a1210e3b18": "6ace41a10e025f0122f5bf60",
+    "69a691563f3b94a1210e3dec": "6ace41a32f0712f590115926",
+    "video:69a690193f3b94a1210e3b18": "6ace45e8749a210585415f02",
+    "video:69a691563f3b94a1210e3dec": "6ace45f50e025f0122f6984c",
+    "video:69a0a1b04be271803d6f6787": "6ace45f6844852c82c7abc96"
+  },
+  "video": "2026/10/14.mp4"
+}
