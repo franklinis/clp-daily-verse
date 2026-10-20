@@ -283,6 +283,8 @@ def cmd_redo(args: argparse.Namespace) -> int:
             print(f"{day}: not prepared yet, nothing to redo")
             continue
         manifest = json.loads(path.read_text(encoding="utf-8"))
+        tamil = manifest["verses"]["ta"]
+        tamil["reference"] = sources.tamil_book_name(tamil["reference"])  # days made before "1 கொரிந்தியர்"
         verses = {lang: sources.Verse(**manifest["verses"][lang]) for lang in ORDER}
         (IMAGES / imagery.scene_name(day)).unlink(missing_ok=True)
         scene = imagery.scene_for(day, manifest["verses"], manifest.get("topics", []), IMAGES)
