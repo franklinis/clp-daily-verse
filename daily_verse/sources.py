@@ -128,6 +128,14 @@ def tamil_book(slug: str) -> str:
         raise SourceError(f"No tamil-bible.com book for {slug!r}") from err
 
 
+ROMAN = {"I": "1", "II": "2", "III": "3"}
+
+
+def tamil_book_name(name: str) -> str:
+    """tamil-bible.com writes numbered books with Roman numerals ("I கொரிந்தியர்"); Tamil Bibles write "1 கொரிந்தியர்"."""
+    return re.sub(r"^(III|II|I)\s+", lambda m: ROMAN[m[1]] + " ", name.strip())
+
+
 def parse_tamil(page: str, chapter: int, first: int, last: int) -> tuple[str, str]:
     """Return (Tamil reference, text) for verses first..last of a chapter page."""
     title = re.search(r"<title>\s*(.+?)\s+\d+\s+—", page, re.S)
@@ -147,7 +155,7 @@ def parse_tamil(page: str, chapter: int, first: int, last: int) -> tuple[str, st
             text = re.sub(r"^\([^)]*\)\s*", "", text)  # a psalm's title, e.g. "(தாவீதின் சங்கீதம்.)"
         texts.append(text)
     verses = str(first) if first == last else f"{first}-{last}"
-    return f"{html.unescape(title.group(1)).strip()} {chapter}:{verses}", " ".join(texts)
+    return f"{tamil_book_name(html.unescape(title.group(1)))} {chapter}:{verses}", " ".join(texts)
 
 
 def german_reference(ref: str) -> str:

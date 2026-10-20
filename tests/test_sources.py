@@ -97,6 +97,16 @@ def test_parse_tamil_joins_a_verse_range() -> None:
     assert sources.parse_tamil(page, 23, 3, 3) == ("சங்கீதம் 23:3", "வசனம் 3.")
 
 
+def test_numbered_tamil_books_use_arabic_numerals() -> None:
+    page = ('<title>I கொரிந்தியர் 8 — Tamil Bible</title>'
+            '<div class="verse-row" id="v6"><div class="verse-tamil">வசனம்.</div></div>')
+    assert sources.parse_tamil(page, 8, 6, 6) == ("1 கொரிந்தியர் 8:6", "வசனம்.")
+    assert sources.tamil_book_name("II இராஜாக்கள்") == "2 இராஜாக்கள்"
+    assert sources.tamil_book_name("III யோவான்") == "3 யோவான்"
+    assert sources.tamil_book_name("இயேசு") == "இயேசு"  # a word starting with a Tamil letter is untouched
+    assert sources.tamil_book_name("ஏசாயா") == "ஏசாயா"
+
+
 def test_parse_tamil_missing_verse() -> None:
     page = "<title>யோவான் 4 — Tamil Bible</title>"
     with pytest.raises(sources.SourceError, match="no verse 4:14"):

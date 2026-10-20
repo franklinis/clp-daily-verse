@@ -26,6 +26,8 @@ ORDER = ("ta", "en", "de")
 LOCALES = {"ta": "ta-IN", "en": "en-GB", "de": "de-DE"}
 OUTPUT_FORMAT = "riff-24khz-16bit-mono-pcm"
 GERMAN_ORDINALS = {"1": "Erster", "2": "Zweiter", "3": "Dritter"}
+# "1 கொரிந்தியர்" is read "முதலாம் கொரிந்தியர்" (the Roman "I" form is accepted for days made before the fix).
+TAMIL_ORDINALS = {"1": "முதலாம்", "2": "இரண்டாம்", "3": "மூன்றாம்", "I": "முதலாம்", "II": "இரண்டாம்", "III": "மூன்றாம்"}
 MOSE = {"1": "Erstes", "2": "Zweites", "3": "Drittes", "4": "Viertes", "5": "Fünftes"}
 LAST_MATCHED = 0  # how many on-screen words the last word_times() call matched to Azure timings (for logs)
 _REFERENCE = re.compile(r"^(?P<book>.+?)\s+(?P<chapter>\d+)[:,](?P<first>\d+)(?:-(?P<last>\d+))?$")
@@ -76,6 +78,9 @@ def spoken_reference(lang: str, reference: str) -> str:
             book = f"{GERMAN_ORDINALS[numbered[1]]} {numbered[2]}"
         verses = f"Verse {first} bis {last}" if last else f"Vers {first}"
         return f"{book}, Kapitel {chapter}, {verses}."
+    numbered = re.match(r"^(III|II|I|[123])\s+(.+)$", book)
+    if numbered:
+        book = f"{TAMIL_ORDINALS[numbered[1]]} {numbered[2]}"
     verses = f"{first} முதல் {last} வரையிலான வசனங்கள்" if last else f"{first} ஆம் வசனம்"
     return f"{book}, {chapter} ஆம் அதிகாரம், {verses}."
 
