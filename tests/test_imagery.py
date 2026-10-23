@@ -47,7 +47,8 @@ def test_prompt_carries_the_verse_topics_and_rules() -> None:
     text = imagery.prompt(VERSES, ["eternal life", "water"])
     assert 'Verse: "But whosoever drinketh of the water' in text and "(John 4:14)" in text
     assert "Themes: eternal life, water." in text
-    assert "no people" in text and "no text" in text and "no depictions of God" in text
+    assert "people may appear" in text and "never as close-up faces" in text  # church.json image_people
+    assert "no text" in text and "no depictions of God, Jesus, angels or named Bible characters" in text
     assert "middle third calm" in text
 
 

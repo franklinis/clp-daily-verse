@@ -99,6 +99,7 @@
   },
   "speaking_rate": "-8%",
   "image_style": "cinematic nature photography with natural, true-to-life colours, rich detail and depth",
+  "image_people": true,
   "skip_days": [
     "sunday"
   ]
