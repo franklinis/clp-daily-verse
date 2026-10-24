@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-16",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "கலாத்தியர் 6:9",
+      "text": "நன்மைசெய்கிறதில் சோர்ந்துபோகாமல் இருப்போமாக; நாம் தளர்ந்துபோகாதிருந்தால் ஏற்றகாலத்தில் அறுப்போம்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Galatians 6:9",
+      "text": "And let us not be weary in well doing: for in due season we shall reap, if we faint not."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Galater 6,9",
+      "text": "Lasset uns aber Gutes tun und nicht müde werden; denn zu seiner Zeit werden wir auch ernten ohne Aufhören."
+    }
+  },
+  "images": {
+    "ta": "2026/10/16-ta.png",
+    "en": "2026/10/16-en.png",
+    "de": "2026/10/16-de.png"
+  },
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6acf473767a2357e2379ddbb",
+    "69a690193f3b94a1210e3b18": "6acf473716726359246837b7",
+    "video-ta:69a691563f3b94a1210e3dec": "6acf47388b335a30077fa3a0",
+    "video-ta:69a690193f3b94a1210e3b18": "6acf47389ce69926b8546638",
+    "video-ta:69a0a1b04be271803d6f6787": "6acf473916726359246837dd",
+    "video-en:69a691563f3b94a1210e3dec": "6acf47398fea659be5b44220",
+    "video-en:69a690193f3b94a1210e3b18": "6acf47393a46469ddbc74c5e",
+    "video-en:69a0a1b04be271803d6f6787": "6acf473a167263592468380c",
+    "video-de:69a691563f3b94a1210e3dec": "6acf473b3a46469ddbc74c9c",
+    "video-de:69a690193f3b94a1210e3b18": "6acf473b67a2357e2379de1a",
+    "video-de:69a0a1b04be271803d6f6787": "6acf473b9ce69926b8546719"
+  },
+  "videos": {
+    "ta": "2026/10/16-ta.mp4",
+    "en": "2026/10/16-en.mp4",
+    "de": "2026/10/16-de.mp4"
+  },
+  "narrated": true,
+  "scene": "2026/10/16-scene.jpg",
+  "revision": 1,
+  "refresh": false
+}

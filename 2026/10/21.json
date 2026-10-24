@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-21",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 40:8",
+      "text": "என் தேவனே, உமக்குப் பிரியமானதைச் செய்ய விரும்புகிறேன்; உமது நியாயப்பிரமாணம் என் உள்ளத்திற்குள் இருக்கிறது என்று சொன்னேன்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 40:8",
+      "text": "I delight to do thy will, O my God: yea, thy law is within my heart."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 40,8",
+      "text": "Deinen Willen, mein Gott, tue ich gern, und dein Gesetz habe ich in meinem Herzen."
+    }
+  },
+  "topics": [
+    "obedience",
+    "law",
+    "heart"
+  ],
+  "images": {
+    "ta": "2026/10/21-ta.png",
+    "en": "2026/10/21-en.png",
+    "de": "2026/10/21-de.png"
+  },
+  "scene": "2026/10/21-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad5e9dcc31fbd1de8eacac7",
+    "69a690193f3b94a1210e3b18": "6ad5e9dd04e1e2b04408ac7c",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad5e9ddda0da05802b75130",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad5e9de04e1e2b04408acc0",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad5e9de447c92839aac7882",
+    "video-en:69a691563f3b94a1210e3dec": "6ad5e9deda0da05802b75170",
+    "video-en:69a690193f3b94a1210e3b18": "6ad5e9dfda0da05802b75196",
+    "video-en:69a0a1b04be271803d6f6787": "6ad5e9df04e1e2b04408ad0b",
+    "video-de:69a691563f3b94a1210e3dec": "6ad5e9e00a846dac96d34e3f",
+    "video-de:69a690193f3b94a1210e3b18": "6ad5e9e004e1e2b04408ad5f",
+    "video-de:69a0a1b04be271803d6f6787": "6ad5e9e0c31fbd1de8eacb6c"
+  },
+  "videos": {
+    "ta": "2026/10/21-ta.mp4",
+    "en": "2026/10/21-en.mp4",
+    "de": "2026/10/21-de.mp4"
+  },
+  "narrated": true
+}

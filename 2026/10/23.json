@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-23",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "அப்போஸ்தலர் 17:28",
+      "text": "ஏனெனில் அவருக்குள் நாம் பிழைக்கிறோம், அசைகிறோம், இருக்கிறோம்; அப்படியே உங்கள் புலவர்களிலும் சிலர்: நாம் அவருடைய சந்ததியார் என்று சொல்லியிருக்கிறார்கள்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Acts 17:28",
+      "text": "For in him we live, and move, and have our being; as certain also of your own poets have said, For we are also his offspring."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Apostelgeschichte 17,28",
+      "text": "Denn in ihm leben, weben und sind wir; wie auch etliche Poeten bei euch gesagt haben: \"Wir sind seines Geschlechts.\""
+    }
+  },
+  "topics": [
+    "creation",
+    "life"
+  ],
+  "images": {
+    "ta": "2026/10/23-ta.png",
+    "en": "2026/10/23-en.png",
+    "de": "2026/10/23-de.png"
+  },
+  "scene": "2026/10/23-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad8850c7143aca6ab07a79a",
+    "69a690193f3b94a1210e3b18": "6ad8850d7f2a5e272eca9c89",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad8850d7143aca6ab07a7d6",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad8850ed109f3f66b899be0",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad8850e7f2a5e272eca9cc4",
+    "video-en:69a691563f3b94a1210e3dec": "6ad8850fd109f3f66b899c32",
+    "video-en:69a690193f3b94a1210e3b18": "6ad8850f7143aca6ab07a877",
+    "video-en:69a0a1b04be271803d6f6787": "6ad8850f7f2a5e272eca9d55",
+    "video-de:69a691563f3b94a1210e3dec": "6ad885107f2a5e272eca9d76",
+    "video-de:69a690193f3b94a1210e3b18": "6ad885107f2a5e272eca9d97",
+    "video-de:69a0a1b04be271803d6f6787": "6ad885117f2a5e272eca9db8"
+  },
+  "videos": {
+    "ta": "2026/10/23-ta.mp4",
+    "en": "2026/10/23-en.mp4",
+    "de": "2026/10/23-de.mp4"
+  },
+  "narrated": true
+}

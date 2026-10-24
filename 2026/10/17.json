@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-17",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "ரோமர் 2:6",
+      "text": "தேவன் அவனவனுடைய கிரியைகளுக்குத்தக்கதாய் அவனவனுக்குப் பலனளிப்பார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Romans 2:6",
+      "text": "Who will render to every man according to his deeds."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Römer 2,6",
+      "text": "Welcher geben wird einem jeglichen nach seinen Werken."
+    }
+  },
+  "topics": [
+    "righteousness",
+    "reward"
+  ],
+  "images": {
+    "ta": "2026/10/17-ta.png",
+    "en": "2026/10/17-en.png",
+    "de": "2026/10/17-de.png"
+  },
+  "scene": "2026/10/17-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad098e85308ec6b2f8284a2",
+    "69a690193f3b94a1210e3b18": "6ad098e9e415cc12f0bc3e87",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad098e9a86e9aa7e5e222d1",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad098eaa86e9aa7e5e222f0",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad098ea5308ec6b2f828510",
+    "video-en:69a691563f3b94a1210e3dec": "6ad098eba86e9aa7e5e2231a",
+    "video-en:69a690193f3b94a1210e3b18": "6ad098ebe415cc12f0bc3f14",
+    "video-en:69a0a1b04be271803d6f6787": "6ad098ec5308ec6b2f8285df",
+    "video-de:69a691563f3b94a1210e3dec": "6ad098ecc1552684819421f6",
+    "video-de:69a690193f3b94a1210e3b18": "6ad098ed921b099deb309790",
+    "video-de:69a0a1b04be271803d6f6787": "6ad098edfcd85432bb94ecaf"
+  },
+  "videos": {
+    "ta": "2026/10/17-ta.mp4",
+    "en": "2026/10/17-en.mp4",
+    "de": "2026/10/17-de.mp4"
+  },
+  "narrated": true
+}
