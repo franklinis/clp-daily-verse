@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-15",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 119:14",
+      "text": "திரளான செல்வத்தில் களிகூருவதுபோல, நான் உமது சாட்சிகளின் வழியில் களிகூருகிறேன்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 119:14",
+      "text": "I have rejoiced in the way of thy testimonies, as much as in all riches."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 119,14",
+      "text": "Ich freue mich des Weges deiner Zeugnisse wie über allerlei Reichtum."
+    }
+  },
+  "images": {
+    "ta": "2026/10/15-ta.png",
+    "en": "2026/10/15-en.png",
+    "de": "2026/10/15-de.png"
+  },
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ace5d00a582dbdae832cb90",
+    "69a690193f3b94a1210e3b18": "6ace5d01d718c7e2826da83f",
+    "video-ta:69a691563f3b94a1210e3dec": "6ace5d01d718c7e2826da87e",
+    "video-ta:69a690193f3b94a1210e3b18": "6ace5d02a582dbdae832cbf8",
+    "video-ta:69a0a1b04be271803d6f6787": "6ace5d02a582dbdae832cc5c",
+    "video-en:69a691563f3b94a1210e3dec": "6acf47338fea659be5b440c3",
+    "video-en:69a690193f3b94a1210e3b18": "6acf47343a46469ddbc74bb0",
+    "video-en:69a0a1b04be271803d6f6787": "6acf47349ce69926b85465c6",
+    "video-de:69a691563f3b94a1210e3dec": "6acf4735167263592468374d",
+    "video-de:69a690193f3b94a1210e3b18": "6acf473567a2357e2379dd39",
+    "video-de:69a0a1b04be271803d6f6787": "6acf47358fea659be5b44116"
+  },
+  "videos": {
+    "ta": "2026/10/15-ta.mp4",
+    "en": "2026/10/15-en.mp4",
+    "de": "2026/10/15-de.mp4"
+  },
+  "narrated": true,
+  "scene": "2026/10/15-scene.jpg",
+  "revision": 1,
+  "refresh": false
+}

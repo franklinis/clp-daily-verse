@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-28",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "வெளிப்படுத்தல் 1:8",
+      "text": "இருக்கிறவரும் இருந்தவரும் வருகிறவருமாகிய சர்வவல்லமையுள்ள கர்த்தர்: நான் அல்பாவும், ஒமெகாவும் ஆதியும் அந்தமுமாயிருக்கிறேன் என்று திருவுளம்பற்றுகிறார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Revelation 1:8",
+      "text": "I am Alpha and Omega, the beginning and the ending, saith the Lord, which is, and which was, and which is to come, the Almighty."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Offenbarung 1,8",
+      "text": "Ich bin das A und das O, der Anfang und das Ende, spricht Gott der HERR, der da ist und der da war und der da kommt, der Allmächtige."
+    }
+  },
+  "topics": [
+    "eternal life",
+    "reliability",
+    "God",
+    "second coming",
+    "almighty"
+  ],
+  "images": {
+    "ta": "2026/10/28-ta.png",
+    "en": "2026/10/28-en.png",
+    "de": "2026/10/28-de.png"
+  },
+  "scene": "2026/10/28-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6adf27679c02e64663121283",
+    "69a690193f3b94a1210e3b18": "6adf27678b3bea238dc6ec63",
+    "video-ta:69a691563f3b94a1210e3dec": "6adf2767295aa0bde99363ed",
+    "video-ta:69a690193f3b94a1210e3b18": "6adf276856fc79fbe77d4ac1",
+    "video-ta:69a0a1b04be271803d6f6787": "6adf276856fc79fbe77d4b1b",
+    "video-en:69a691563f3b94a1210e3dec": "6adf276913ad4491a789d78d",
+    "video-en:69a690193f3b94a1210e3b18": "6adf27699c02e646631213ad",
+    "video-en:69a0a1b04be271803d6f6787": "6adf276a13ad4491a789d7d3",
+    "video-de:69a691563f3b94a1210e3dec": "6adf276a0e2d22425b2045e2",
+    "video-de:69a690193f3b94a1210e3b18": "6adf276b8b3bea238dc6ee55",
+    "video-de:69a0a1b04be271803d6f6787": "6adf276b295aa0bde9936596"
+  },
+  "videos": {
+    "ta": "2026/10/28-ta.mp4",
+    "en": "2026/10/28-en.mp4",
+    "de": "2026/10/28-de.mp4"
+  },
+  "narrated": true
+}

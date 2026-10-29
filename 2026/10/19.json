@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-19",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யோவான் 14:21",
+      "text": "என் கற்பனைகளைப் பெற்றுக்கொண்டு அவைகளைக் கைக்கொள்ளுகிறவனே என்னிடத்தில் அன்பாயிருக்கிறான், என்னிடத்தில் அன்பாயிருக்கிறவன் என் பிதாவுக்கு அன்பாயிருப்பான்; நானும் அவனில் அன்பாயிருந்து, அவனுக்கு என்னை வெளிப்படுத்துவேன் என்றார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "John 14:21",
+      "text": "He that hath my commandments, and keepeth them, he it is that loveth me: and he that loveth me shall be loved of my Father, and I will love him, and will manifest myself to him."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Johannes 14,21",
+      "text": "Wer meine Gebote hat und hält sie, der ist es, der mich liebt. Wer mich aber liebt, der wird von meinem Vater geliebt werden, und ich werde ihn lieben und mich ihm offenbaren."
+    }
+  },
+  "topics": [
+    "law",
+    "love",
+    "Father"
+  ],
+  "images": {
+    "ta": "2026/10/19-ta.png",
+    "en": "2026/10/19-en.png",
+    "de": "2026/10/19-de.png"
+  },
+  "scene": "2026/10/19-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad333c6ae173d6e00aac45e",
+    "69a690193f3b94a1210e3b18": "6ad333c60b0d72757acb2d18",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad333c7938409f1d0794d90",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad333c7938409f1d0794db0",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad333c7dd83363c4dc36012",
+    "video-en:69a691563f3b94a1210e3dec": "6ad333c8769b4579346bb7d1",
+    "video-en:69a690193f3b94a1210e3b18": "6ad333c8769b4579346bb7f1",
+    "video-en:69a0a1b04be271803d6f6787": "6ad333c90b0d72757acb2d60",
+    "video-de:69a691563f3b94a1210e3dec": "6ad333c90a208cb32310d701",
+    "video-de:69a690193f3b94a1210e3b18": "6ad333c9dd83363c4dc3605d",
+    "video-de:69a0a1b04be271803d6f6787": "6ad333ca769b4579346bb833"
+  },
+  "videos": {
+    "ta": "2026/10/19-ta.mp4",
+    "en": "2026/10/19-en.mp4",
+    "de": "2026/10/19-de.mp4"
+  },
+  "narrated": true,
+  "revision": 2,
+  "refresh": false
+}

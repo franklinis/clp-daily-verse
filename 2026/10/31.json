@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-31",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "உபாகமம் 31:8",
+      "text": "கர்த்தர்தாமே உனக்கு முன்பாகப் போகிறவர், அவர் உன்னோடே இருப்பார்; அவர் உன்னை விட்டு விலகுவதுமில்லை, உன்னைக் கைவிடுவதுமில்லை; நீ பயப்படவும் கலங்கவும் வேண்டாம் என்றான்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Deuteronomy 31:8",
+      "text": "And the LORD, he it is that doth go before thee; he will be with thee, he will not fail thee, neither forsake thee: fear not, neither be dismayed."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "5. Mose 31,8",
+      "text": "Der HERR aber, der selber vor euch her geht, der wird mit dir sein und wird die Hand nicht abtun noch dich verlassen. Fürchte dich nicht und erschrick nicht."
+    }
+  },
+  "topics": [
+    "following",
+    "fear",
+    "encouragement",
+    "sadness",
+    "reliability",
+    "covenant"
+  ],
+  "images": {
+    "ta": "2026/10/31-ta.png",
+    "en": "2026/10/31-en.png",
+    "de": "2026/10/31-de.png"
+  },
+  "scene": "2026/10/31-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ae3268e04fdcc0ef22de9d3",
+    "69a690193f3b94a1210e3b18": "6ae3268e0c2cf6705772f0e8",
+    "video-ta:69a691563f3b94a1210e3dec": "6ae3268f0c2cf6705772f110",
+    "video-ta:69a690193f3b94a1210e3b18": "6ae3268f04fdcc0ef22dea02",
+    "video-ta:69a0a1b04be271803d6f6787": "6ae3268f30bf75460fd0d5b6",
+    "video-en:69a691563f3b94a1210e3dec": "6ae326900c2cf6705772f182",
+    "video-en:69a690193f3b94a1210e3b18": "6ae3269135265d851e02e924",
+    "video-en:69a0a1b04be271803d6f6787": "6ae3269130bf75460fd0d60a",
+    "video-de:69a691563f3b94a1210e3dec": "6ae32692871db13a17aeb0ae",
+    "video-de:69a690193f3b94a1210e3b18": "6ae32692871db13a17aeb0df",
+    "video-de:69a0a1b04be271803d6f6787": "6ae3269235265d851e02e967"
+  },
+  "videos": {
+    "ta": "2026/10/31-ta.mp4",
+    "en": "2026/10/31-en.mp4",
+    "de": "2026/10/31-de.mp4"
+  },
+  "narrated": true
+}

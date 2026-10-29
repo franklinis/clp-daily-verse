@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-22",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "1 கொரிந்தியர் 8:6",
+      "text": "பிதாவாகிய ஒரே தேவன் நமக்குண்டு, அவராலே சகலமும் உண்டாயிருக்கிறது; அவருக்கென்று நாமும் உண்டாயிருக்கிறோம். இயேசுகிறிஸ்து என்னும் ஒரே கர்த்தரும் நமக்குண்டு; அவர்மூலமாய்ச் சகலமும் உண்டாயிருக்கிறது, அவர் மூலமாய் நாமும் உண்டாயிருக்கிறோம்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "1 Corinthians 8:6",
+      "text": "But to us there is but one God, the Father, of whom are all things, and we in him; and one Lord Jesus Christ, by whom are all things, and we by him."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "1. Korinther 8,6",
+      "text": "So haben wir doch nur einen Gott, den Vater, von welchem alle Dinge sind und wir zu ihm; und einen HERRN, Jesus Christus, durch welchen alle Dinge sind und wir durch ihn."
+    }
+  },
+  "topics": [
+    "Father",
+    "life",
+    "Jesus",
+    "creation"
+  ],
+  "images": {
+    "ta": "2026/10/22-ta.png",
+    "en": "2026/10/22-en.png",
+    "de": "2026/10/22-de.png"
+  },
+  "scene": "2026/10/22-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad7349a9204fdb170422781",
+    "69a690193f3b94a1210e3b18": "6ad7349bafbc1740acd18157",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad7349c0b25f71ece57deb7",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad7349dfc46f49b92859783",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad7349e4cdd36fcb10dad52",
+    "video-en:69a691563f3b94a1210e3dec": "6ad7349e4cdd36fcb10daddd",
+    "video-en:69a690193f3b94a1210e3b18": "6ad7349ffc46f49b928598ef",
+    "video-en:69a0a1b04be271803d6f6787": "6ad734a0afbc1740acd189e9",
+    "video-de:69a691563f3b94a1210e3dec": "6ad734a14cdd36fcb10daefe",
+    "video-de:69a690193f3b94a1210e3b18": "6ad734a10b25f71ece57e2c2",
+    "video-de:69a0a1b04be271803d6f6787": "6ad734a295f8ed1a3c83a253"
+  },
+  "videos": {
+    "ta": "2026/10/22-ta.mp4",
+    "en": "2026/10/22-en.mp4",
+    "de": "2026/10/22-de.mp4"
+  },
+  "narrated": true,
+  "revision": 1,
+  "refresh": false
+}

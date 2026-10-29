@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-30",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "நீதிமொழிகள் 3:5-6",
+      "text": "உன் சுயபுத்தியின்மேல் சாயாமல், உன் முழு இருதயத்தோடும் கர்த்தரில் நம்பிக்கையாயிருந்து, உன் வழிகளிலெல்லாம் அவரை நினைத்துக்கொள்; அப்பொழுது அவர் உன் பாதைகளைச் செவ்வைப்படுத்துவார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Proverbs 3:5-6",
+      "text": "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Sprüche 3,5-6",
+      "text": "Verlaß dich auf den HERRN von ganzem Herzen und verlaß dich nicht auf deinen Verstand; sondern gedenke an ihn in allen deinen Wegen, so wird er dich recht führen."
+    }
+  },
+  "topics": [
+    "trust",
+    "dependence",
+    "heart",
+    "equipment"
+  ],
+  "images": {
+    "ta": "2026/10/30-ta.png",
+    "en": "2026/10/30-en.png",
+    "de": "2026/10/30-de.png"
+  },
+  "scene": "2026/10/30-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ae1d0bda445010a009b9dba",
+    "69a690193f3b94a1210e3b18": "6ae1d0bd96dccc28f6786ea2",
+    "video-ta:69a691563f3b94a1210e3dec": "6ae1d0bea4d3369c72e805fc",
+    "video-ta:69a690193f3b94a1210e3b18": "6ae1d0be4e936aa1bcc0260a",
+    "video-ta:69a0a1b04be271803d6f6787": "6ae1d0bea4d3369c72e8061d",
+    "video-en:69a691563f3b94a1210e3dec": "6ae1d0bfa445010a009b9df8",
+    "video-en:69a690193f3b94a1210e3b18": "6ae1d0bfa4d3369c72e80651",
+    "video-en:69a0a1b04be271803d6f6787": "6ae1d0bf4e936aa1bcc02647",
+    "video-de:69a691563f3b94a1210e3dec": "6ae1d0c0a4d3369c72e8069b",
+    "video-de:69a690193f3b94a1210e3b18": "6ae1d0c04e936aa1bcc02687",
+    "video-de:69a0a1b04be271803d6f6787": "6ae1d0c0f2d8122c07ca1848"
+  },
+  "videos": {
+    "ta": "2026/10/30-ta.mp4",
+    "en": "2026/10/30-en.mp4",
+    "de": "2026/10/30-de.mp4"
+  },
+  "narrated": true
+}

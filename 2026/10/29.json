@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-29",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யாக்கோபு 4:7",
+      "text": "ஆகையால், தேவனுக்குக் கீழ்ப்படிந்திருங்கள்; பிசாசுக்கு எதிர்த்து நில்லுங்கள், அப்பொழுது அவன் உங்களைவிட்டு ஓடிப்போவான்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "James 4:7",
+      "text": "Submit yourselves therefore to God. Resist the devil, and he will flee from you."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Jakobus 4,7",
+      "text": "So seid nun Gott untertänig. Widerstehet dem Teufel, so flieht er von euch."
+    }
+  },
+  "topics": [
+    "obedience",
+    "safety",
+    "addiction",
+    "devil",
+    "spiritual warfare"
+  ],
+  "images": {
+    "ta": "2026/10/29-ta.png",
+    "en": "2026/10/29-en.png",
+    "de": "2026/10/29-de.png"
+  },
+  "scene": "2026/10/29-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ae074809a0b222f70b53114",
+    "69a690193f3b94a1210e3b18": "6ae07480cedf2995f6495f89",
+    "video-ta:69a691563f3b94a1210e3dec": "6ae0748138034660d2947b79",
+    "video-ta:69a690193f3b94a1210e3b18": "6ae07481f8fdca14fef9f8e4",
+    "video-ta:69a0a1b04be271803d6f6787": "6ae0748138034660d2947ba1",
+    "video-en:69a691563f3b94a1210e3dec": "6ae074829a0b222f70b531c1",
+    "video-en:69a690193f3b94a1210e3b18": "6ae0748238034660d2947c15",
+    "video-en:69a0a1b04be271803d6f6787": "6ae0748338034660d2947c36",
+    "video-de:69a691563f3b94a1210e3dec": "6ae07483227c7f64b7899011",
+    "video-de:69a690193f3b94a1210e3b18": "6ae07484f8fdca14fef9f9bc",
+    "video-de:69a0a1b04be271803d6f6787": "6ae074849a0b222f70b53215"
+  },
+  "videos": {
+    "ta": "2026/10/29-ta.mp4",
+    "en": "2026/10/29-en.mp4",
+    "de": "2026/10/29-de.mp4"
+  },
+  "narrated": true
+}

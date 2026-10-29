@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-20",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "ரோமர் 13:10",
+      "text": "அன்பானது பிறனுக்குப் பொல்லாங்குசெய்யாது; ஆதலால் அன்பு நியாயப்பிரமாணத்தின் நிறைவேறுதலாயிருக்கிறது."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Romans 13:10",
+      "text": "Love worketh no ill to his neighbour: therefore love is the fulfilling of the law."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Römer 13,10",
+      "text": "Denn Liebe tut dem Nächsten nichts Böses. So ist nun die Liebe des Gesetzes Erfüllung."
+    }
+  },
+  "topics": [
+    "law",
+    "love",
+    "neighbor"
+  ],
+  "images": {
+    "ta": "2026/10/20-ta.png",
+    "en": "2026/10/20-en.png",
+    "de": "2026/10/20-de.png"
+  },
+  "scene": "2026/10/20-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad4894a938409f1d0c1f40c",
+    "69a690193f3b94a1210e3b18": "6ad4894aae173d6e00f30148",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad4894b0b0d72757a144e75",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad4894bae173d6e00f3017a",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad4894c938409f1d0c1f452",
+    "video-en:69a691563f3b94a1210e3dec": "6ad4894cae173d6e00f301cd",
+    "video-en:69a690193f3b94a1210e3b18": "6ad4894d6d56c60a7301d837",
+    "video-en:69a0a1b04be271803d6f6787": "6ad4894d938409f1d0c1f477",
+    "video-de:69a691563f3b94a1210e3dec": "6ad4894e0a208cb323593230",
+    "video-de:69a690193f3b94a1210e3b18": "6ad4894e769b457934b4c173",
+    "video-de:69a0a1b04be271803d6f6787": "6ad4894f938409f1d0c1f497"
+  },
+  "videos": {
+    "ta": "2026/10/20-ta.mp4",
+    "en": "2026/10/20-en.mp4",
+    "de": "2026/10/20-de.mp4"
+  },
+  "narrated": true
+}
