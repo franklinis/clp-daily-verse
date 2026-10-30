@@ -53,6 +53,13 @@ jobs:
             git -C media rm -rq --cached . && git -C media clean -fdq
           fi
 
+      - name: Take the church's verse picks from the app
+        if: ${{ vars.POST_TARGET == 'app' }}
+        env:
+          POST_TARGET: ${{ vars.POST_TARGET }}
+          APP_URL: ${{ vars.APP_URL }}
+        run: python -m daily_verse pull-picks
+
       - name: Render slides
         env:
           # Read-aloud starts once NARRATION is "on" and the Azure key is set.

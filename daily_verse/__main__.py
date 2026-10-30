@@ -586,10 +586,51 @@ def cmd_status_page(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_pull_picks(args: argparse.Namespace) -> int:
+    """POST_TARGET=app: take the church's verse picks from the app into custom-verses.csv, and report back.
+
+    Days with a pick get that verse instead of the automatic one; days without
+    keep DailyVerses.net. If the app can't be reached the run stops here, so
+    no picked day falls back to the automatic verse by mistake.
+    """
+    if not app.enabled():
+        return 0
+    today = datetime.now(TIMEZONE).date()
+    try:
+        picks = app.fetch_picks()
+    except (app.AppError, OSError) as err:
+        print(f"Church app: couldn't fetch verse picks: {err}", file=sys.stderr)
+        return 1
+    # Past days stay as they were made; upcoming ones are exactly what the app has.
+    entries = {day: entry for day, entry in custom.load().items() if day <= today}
+    results = []
+    for pick in picks:
+        day = date.fromisoformat(pick["date"])
+        if day <= today:
+            continue
+        if not posting_day(day):
+            results.append({"date": pick["date"], "problem": f"Nothing is posted on {day:%A}s."})
+            continue
+        try:
+            verses, _ = sources.fetch_custom(pick["reference"])
+        except sources.SourceError as err:
+            results.append({"date": pick["date"], "problem": str(err)})
+            continue
+        entries[day] = custom.Entry(verses["en"].reference, pick.get("theme", ""))
+        results.append({"date": pick["date"], "found": verses["en"].reference})
+        print(f"{day}: the church's verse {verses['en'].reference}")
+    custom.save(entries)
+    try:
+        app.send_pick_results(results)
+    except (app.AppError, OSError) as err:
+        print(f"::warning::Church app: couldn't report the verse picks: {err}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="daily_verse")
     parser.add_argument("command", choices=["render", "drafts", "redo", "prune", "preview", "status-page", "verse",
-                                            "verse-apply", "verse-reply", "notify"])
+                                            "verse-apply", "verse-reply", "notify", "pull-picks"])
     parser.add_argument("--start", type=date.fromisoformat,
                         default=datetime.now(TIMEZONE).date() + timedelta(days=1))
     parser.add_argument("--days", type=int, default=3)
@@ -602,7 +643,8 @@ def main() -> int:
     args = parser.parse_args()
     commands = {"render": cmd_render, "drafts": cmd_drafts, "redo": cmd_redo, "prune": cmd_prune,
                 "preview": cmd_preview, "status-page": cmd_status_page, "verse": cmd_verse,
-                "verse-apply": cmd_verse_apply, "verse-reply": cmd_verse_reply, "notify": cmd_notify}
+                "verse-apply": cmd_verse_apply, "verse-reply": cmd_verse_reply, "notify": cmd_notify,
+                "pull-picks": cmd_pull_picks}
     return commands[args.command](args)
 
 

@@ -76,3 +76,14 @@ def send_day(day: date, title: str, due_at: str, expires_at: str, posts: list[di
 
 def approved(day: date) -> bool:
     return bool(_call("GET", f"/api/social/inbox?batch={urllib.parse.quote(batch_key(day))}").get("approved"))
+
+
+def fetch_picks() -> list[dict]:
+    """The church's upcoming verse picks from the app: [{"date", "reference", "theme"}]."""
+    return list(_call("GET", "/api/social/verse-picks").get("picks", []))
+
+
+def send_pick_results(results: list[dict]) -> None:
+    """What this run made of each pick: {"date", "found"} or {"date", "problem"}."""
+    if results:
+        _call("POST", "/api/social/verse-picks", {"results": results})

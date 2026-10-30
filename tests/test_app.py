@@ -53,3 +53,64 @@ def test_days_with_buffer_drafts_stay_in_buffer(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(app, "send_day", lambda *a: sent.append(a) or False)
     assert main.send_to_app(argparse.Namespace(start=None, days=1), FEED, VIDEO) == 0
     assert sent == []
+
+
+def test_picks_from_the_app_replace_the_automatic_verse(monkeypatch, tmp_path) -> None:
+    import argparse
+    from datetime import datetime as real_datetime
+
+    from daily_verse import __main__ as main
+    from daily_verse import custom, sources
+
+    csv_path = tmp_path / "custom-verses.csv"
+    custom.save({date(2026, 10, 1): custom.Entry("John 3:16")}, csv_path)  # a past day stays
+    monkeypatch.setattr(custom, "PATH", csv_path)
+    monkeypatch.setattr(custom.load, "__defaults__", (csv_path,))
+    monkeypatch.setattr(custom.save, "__defaults__", (csv_path,))
+    monkeypatch.setenv("POST_TARGET", "app")
+
+    class Today(real_datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return real_datetime(2026, 10, 30, 9, 0, tzinfo=tz)
+
+    monkeypatch.setattr(main, "datetime", Today)
+    monkeypatch.setattr(app, "fetch_picks", lambda: [
+        {"date": "2026-11-02", "reference": "Psalm 23,1", "theme": "trust"},
+        {"date": "2026-11-03", "reference": "Nowhere 99:99", "theme": ""},
+        {"date": "2026-11-01", "reference": "Psalm 1:1", "theme": ""},  # a Sunday
+    ])
+
+    def fetch(reference, topics=None):
+        if reference.startswith("Nowhere"):
+            raise sources.SourceError("No such book")
+        verse = sources.Verse(lang="en", reference="Psalm 23:1", text="The LORD is my shepherd")
+        return {"en": verse}, []
+
+    monkeypatch.setattr(sources, "fetch_custom", fetch)
+    reported = []
+    monkeypatch.setattr(app, "send_pick_results", reported.extend)
+    assert main.cmd_pull_picks(argparse.Namespace()) == 0
+    assert custom.load(csv_path) == {
+        date(2026, 10, 1): custom.Entry("John 3:16"),
+        date(2026, 11, 2): custom.Entry("Psalm 23:1", "trust"),
+    }
+    assert {r["date"]: r.get("found") or r.get("problem") for r in reported} == {
+        "2026-11-02": "Psalm 23:1",
+        "2026-11-03": "No such book",
+        "2026-11-01": "Nothing is posted on Sundays.",
+    }
+
+
+def test_stops_the_run_if_the_app_cant_be_reached(monkeypatch) -> None:
+    import argparse
+
+    from daily_verse import __main__ as main
+
+    monkeypatch.setenv("POST_TARGET", "app")
+
+    def down():
+        raise app.AppError("HTTP 503")
+
+    monkeypatch.setattr(app, "fetch_picks", down)
+    assert main.cmd_pull_picks(argparse.Namespace()) == 1
