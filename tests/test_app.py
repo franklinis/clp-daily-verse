@@ -37,3 +37,19 @@ def test_review_link_and_teams_card_point_to_the_app(monkeypatch) -> None:
     text = str(card)
     assert "in the church app" in text and "Open in the app" in text and "publish.buffer.com" not in text
     assert "publish.buffer.com" in str(teams.ready_card(day, "Psalm 23:1", "https://m/en.png", 11, False))
+
+
+def test_days_with_buffer_drafts_stay_in_buffer(monkeypatch, tmp_path) -> None:
+    import argparse
+    import json
+
+    from daily_verse import __main__ as main
+
+    path = tmp_path / "16.json"
+    path.write_text(json.dumps(manifest(buffer={"fb1": "buf-1"})), encoding="utf-8")
+    monkeypatch.setattr(main, "manifest_path", lambda day: path)
+    monkeypatch.setattr(main, "days", lambda start, count: [date(2026, 10, 16)])
+    sent = []
+    monkeypatch.setattr(app, "send_day", lambda *a: sent.append(a) or False)
+    assert main.send_to_app(argparse.Namespace(start=None, days=1), FEED, VIDEO) == 0
+    assert sent == []

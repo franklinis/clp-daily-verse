@@ -238,6 +238,10 @@ def send_to_app(args: argparse.Namespace, carousel_channels: list, video_channel
         manifest = json.loads(path.read_text(encoding="utf-8"))
         if manifest.get("app", {}).get("approved"):
             continue
+        if manifest.get("buffer"):
+            # Days made before the switch already have Buffer drafts: they finish there, never in both.
+            print(f"{day}: already has Buffer drafts, approve it in Buffer")
+            continue
         jobs = draft_jobs(manifest, base_url, carousel_channels, video_channels, ai_label)
         for url in dict.fromkeys(url for job in jobs for url in job.urls):
             wait_until_public(url)
