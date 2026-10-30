@@ -171,16 +171,18 @@ def results_card(results: list[dict]) -> dict:
     return card(body)
 
 
-def ready_card(day: date, reference: str, image_url: str, posts: int, updated: bool) -> dict:
-    """A custom day (or a changed day) is in Buffer, waiting for approval."""
+def ready_card(day: date, reference: str, image_url: str, posts: int, updated: bool, app_url: str | None = None) -> dict:
+    """A custom day (or a changed day) is waiting for approval: in the church app (`app_url`) or in Buffer."""
     what = "updated with the new verse" if updated else "ready"
+    where, button, url = (("in the church app", "Open in the app", app_url) if app_url
+                          else ("in Buffer as drafts", "Open Buffer", "https://publish.buffer.com"))
     return card(
         [
             _text(f"📅 {short_date(day)}: {reference}", weight="Bolder", size="Medium"),
             {"type": "Image", "url": image_url, "size": "Large", "altText": reference},
-            _text(f"{posts} posts are {what} in Buffer as drafts. Approve them before 07:00 on {short_date(day)}."),
+            _text(f"{posts} posts are {what} {where}. Approve them before 07:00 on {short_date(day)}."),
         ],
-        [{"type": "Action.OpenUrl", "title": "Open Buffer", "url": "https://publish.buffer.com"}],
+        [{"type": "Action.OpenUrl", "title": button, "url": url}],
     )
 
 

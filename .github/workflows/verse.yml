@@ -13,6 +13,7 @@ on:
 permissions:
   contents: write # save custom-verses.csv
   actions: write # start the daily run for days that are due soon
+  id-token: write # ask the church app whether a day is approved (POST_TARGET=app)
 
 jobs:
   verse:
@@ -38,6 +39,8 @@ jobs:
         env:
           # To refuse days whose posts are already approved in Buffer.
           BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          POST_TARGET: ${{ vars.POST_TARGET }}
+          APP_URL: ${{ vars.APP_URL }}
         run: python -m daily_verse verse --message "$MESSAGE" --result "$RUNNER_TEMP/verse.json"
 
       - name: Save them

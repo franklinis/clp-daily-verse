@@ -33,7 +33,7 @@ import time as clock
 import urllib.request
 from zoneinfo import ZoneInfo
 
-from . import buffer, captions, custom, imagery, music, render, sources, speech, status_page, teams, video
+from . import app, buffer, captions, custom, imagery, music, render, sources, speech, status_page, teams, video
 
 IMAGES = Path(os.environ.get("MEDIA_DIR", render.ROOT / "images"))
 TIMEZONE = ZoneInfo("Europe/Berlin")
@@ -217,6 +217,47 @@ def draft_jobs(
     return jobs
 
 
+def app_post(job: Job) -> dict:
+    """A draft job as the church app takes it: named by kind and service, e.g. "video-ta:youtube"."""
+    kind = job.key.split(":")[0] if ":" in job.key else "carousel"
+    return {"key": f"{kind}:{job.service}", "channel": job.service, "text": job.text,
+            "assets": job.assets, "metadata": job.metadata}
+
+
+def send_to_app(args: argparse.Namespace, carousel_channels: list, video_channels: list) -> int:
+    """POST_TARGET=app: each day goes to the church app for one-tap approval instead of Buffer drafts."""
+    base_url = os.environ.get("IMAGE_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
+    post_time = time.fromisoformat(os.environ.get("POST_TIME", "07:00"))
+    ai_label = os.environ.get("AI_LABEL", "off").lower() == "on"
+    failed = False
+    for day in days(args.start, args.days):
+        path = manifest_path(day)
+        if not path.exists():
+            print(f"{day}: no slides yet, run render first")
+            continue
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if manifest.get("app", {}).get("approved"):
+            continue
+        jobs = draft_jobs(manifest, base_url, carousel_channels, video_channels, ai_label)
+        for url in dict.fromkeys(url for job in jobs for url in job.urls):
+            wait_until_public(url)
+        due_at = datetime.combine(day, post_time, TIMEZONE)
+        # Not approved on the day itself: not posted.
+        expires_at = datetime.combine(day, time(23, 59, 59), TIMEZONE)
+        try:
+            approved = app.send_day(day, manifest["verses"]["en"]["reference"], due_at.isoformat(),
+                                    expires_at.isoformat(), [app_post(job) for job in jobs])
+        except (app.AppError, OSError) as err:
+            print(f"{day}: church app: {err}", file=sys.stderr)
+            failed = True
+            continue
+        manifest["app"] = {"posts": len(jobs), "approved": approved}
+        manifest["refresh"] = False
+        print(f"{day}: {len(jobs)} posts {'already approved' if approved else 'waiting for approval'} in the church app")
+        path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return 1 if failed else 0
+
+
 def cmd_drafts(args: argparse.Namespace) -> int:
     captions.check()
     api_key = os.environ.get("BUFFER_API_KEY")
@@ -225,6 +266,8 @@ def cmd_drafts(args: argparse.Namespace) -> int:
     if not carousel_channels and not video_channels:
         print("Set BUFFER_CHANNELS and/or BUFFER_VIDEO_CHANNELS (id:service,...)", file=sys.stderr)
         return 2
+    if app.enabled():
+        return send_to_app(args, carousel_channels, video_channels)
     if not api_key:
         # Slides still publish; drafts start once the secret is added.
         print("::warning::BUFFER_API_KEY is not set, so no Buffer drafts were created")
@@ -375,7 +418,14 @@ LOCKED = {"scheduled", "sending", "sent"}
 
 
 def _locked(day: date, api_key: str | None) -> str | None:
-    """Why a day's verse can't change any more: its posts are approved (or out) in Buffer."""
+    """Why a day's verse can't change any more: its posts are approved (or out) in Buffer or the church app."""
+    if app.enabled():
+        try:
+            if app.approved(day):
+                return f"{teams.short_date(day)} is already approved in the church app, so it can't change any more."
+        except (app.AppError, OSError):
+            return None
+        return None
     path = manifest_path(day)
     if not api_key or not path.exists():
         return None
@@ -507,14 +557,16 @@ def cmd_notify(args: argparse.Namespace) -> int:
     base_url = os.environ.get("IMAGE_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
     for path in sorted(IMAGES.glob("*/*/*.json")):
         manifest = json.loads(path.read_text(encoding="utf-8"))
-        if not manifest.get("announce") or not manifest.get("buffer") or manifest.get("refresh"):
+        if not manifest.get("announce") or not (manifest.get("buffer") or manifest.get("app")) or manifest.get("refresh"):
             continue
         day = date.fromisoformat(manifest["date"])
         version = f"?v={manifest['revision']}" if manifest.get("revision") else ""
         try:
             teams.post(url, teams.ready_card(day, manifest["verses"]["en"]["reference"],
                                              f"{base_url}/{manifest['images']['en']}{version}",
-                                             len(manifest["buffer"]), manifest["announce"] == "changed"))
+                                             len(manifest.get("buffer") or {}) or manifest.get("app", {}).get("posts", 0),
+                                             manifest["announce"] == "changed",
+                                             app.review_url(day) if manifest.get("app") else None))
         except OSError as err:
             print(f"::warning::{day}: Teams didn't take the message ({err}); trying again next run")
             continue

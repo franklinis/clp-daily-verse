@@ -20,6 +20,8 @@ on:
 
 permissions:
   contents: write
+  # A GitHub identity token for the church app (POST_TARGET=app); no secret needed.
+  id-token: write
 
 concurrency: daily-verse
 
@@ -81,6 +83,8 @@ jobs:
         if: ${{ vars.BUFFER_CHANNELS != '' || vars.BUFFER_VIDEO_CHANNELS != '' }}
         env:
           BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          POST_TARGET: ${{ vars.POST_TARGET }}
+          APP_URL: ${{ vars.APP_URL }}
           BUFFER_CHANNELS: ${{ vars.BUFFER_CHANNELS }}
           BUFFER_VIDEO_CHANNELS: ${{ vars.BUFFER_VIDEO_CHANNELS }}
           POST_TIME: ${{ vars.POST_TIME || '07:00' }}
