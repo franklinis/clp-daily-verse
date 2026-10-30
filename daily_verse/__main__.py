@@ -598,7 +598,14 @@ def cmd_pull_picks(args: argparse.Namespace) -> int:
     today = datetime.now(TIMEZONE).date()
     try:
         picks = app.fetch_picks()
-    except (app.AppError, OSError) as err:
+    except app.AppError as err:
+        if "HTTP 404" in str(err):
+            # The app doesn't offer picks (yet): carry on with custom-verses.csv as it is.
+            print("::warning::Church app has no verse picks yet; days use custom-verses.csv as it is")
+            return 0
+        print(f"Church app: couldn't fetch verse picks: {err}", file=sys.stderr)
+        return 1
+    except OSError as err:
         print(f"Church app: couldn't fetch verse picks: {err}", file=sys.stderr)
         return 1
     # Past days stay as they were made; upcoming ones are exactly what the app has.
