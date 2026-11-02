@@ -114,3 +114,8 @@ def test_stops_the_run_if_the_app_cant_be_reached(monkeypatch) -> None:
 
     monkeypatch.setattr(app, "fetch_picks", down)
     assert main.cmd_pull_picks(argparse.Namespace()) == 1
+
+
+def test_empty_app_url_setting_uses_the_default(monkeypatch) -> None:
+    monkeypatch.setenv("APP_URL", "")
+    assert app.app_url() == "https://app.christ-livingpetra.de"

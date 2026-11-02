@@ -30,7 +30,8 @@ def enabled() -> bool:
 
 
 def app_url() -> str:
-    return os.environ.get("APP_URL", "https://app.christ-livingpetra.de").rstrip("/")
+    # An unset repo variable arrives as "" in the workflow: use the default then.
+    return (os.environ.get("APP_URL") or "https://app.christ-livingpetra.de").rstrip("/")
 
 
 def batch_key(day: date) -> str:
