@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-27",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 91:1-2",
+      "text": "உன்னதமானவரின் மறைவிலிருக்கிறவன் சர்வவல்லவருடைய நிழலில் தங்குவான். நான் கர்த்தரை நோக்கி: நீர் என் அடைக்கலம், என் கோட்டை, என் தேவன், நான் நம்பியிருக்கிறவர் என்று சொல்லுவேன்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 91:1-2",
+      "text": "He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty. I will say of the LORD, He is my refuge and my fortress: my God; in him will I trust."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 91,1-2",
+      "text": "Wer unter dem Schirm des Höchsten sitzt und unter dem Schatten des Allmächtigen bleibt, der spricht zu dem HERRN: Meine Zuversicht und meine Burg, mein Gott, auf den ich hoffe."
+    }
+  },
+  "topics": [
+    "trust",
+    "safety",
+    "rest",
+    "almighty"
+  ],
+  "images": {
+    "ta": "2026/10/27-ta.png",
+    "en": "2026/10/27-en.png",
+    "de": "2026/10/27-de.png"
+  },
+  "scene": "2026/10/27-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6addc82c0b5343d070c3e0ec",
+    "69a690193f3b94a1210e3b18": "6addc82c8b3d437ddcfd1cf6",
+    "video-ta:69a691563f3b94a1210e3dec": "6addc82ce4be8a4d869cd2fa",
+    "video-ta:69a690193f3b94a1210e3b18": "6addc82d3d5b27036bc4f8e7",
+    "video-ta:69a0a1b04be271803d6f6787": "6addc82de4be8a4d869cd340",
+    "video-en:69a691563f3b94a1210e3dec": "6addc82d3d5b27036bc4f948",
+    "video-en:69a690193f3b94a1210e3b18": "6addc82ebd33ce99c363e375",
+    "video-en:69a0a1b04be271803d6f6787": "6addc82ebd33ce99c363e3a1",
+    "video-de:69a691563f3b94a1210e3dec": "6addc82ee4be8a4d869cd379",
+    "video-de:69a690193f3b94a1210e3b18": "6addc82f6887a2efc1f8a2ea",
+    "video-de:69a0a1b04be271803d6f6787": "6addc82f3d5b27036bc4f996"
+  },
+  "videos": {
+    "ta": "2026/10/27-ta.mp4",
+    "en": "2026/10/27-en.mp4",
+    "de": "2026/10/27-de.mp4"
+  },
+  "narrated": true
+}

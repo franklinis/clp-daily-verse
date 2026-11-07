@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-24",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "ஏசாயா 25:1",
+      "text": "கர்த்தாவே, நீரே என் தேவன்; உம்மை உயர்த்தி, உமது நாமத்தைத் துதிப்பேன்; நீர் அதிசயமானவைகளைச் செய்தீர்; உமது பூர்வ ஆலோசனைகள் சத்தியமும் உறுதியுமானவைகள்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Isaiah 25:1",
+      "text": "O Lord, thou art my God; I will exalt thee, I will praise thy name; for thou hast done wonderful things; thy counsels of old are faithfulness and truth."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Jesaja 25,1",
+      "text": "HERR, du bist mein Gott! dich preise ich; ich lobe deinen Namen, denn du tust Wunder; deine Ratschlüsse von alters her sind treu und wahrhaftig."
+    }
+  },
+  "topics": [
+    "reliability",
+    "God",
+    "worship",
+    "praise",
+    "faithfulness"
+  ],
+  "images": {
+    "ta": "2026/10/24-ta.png",
+    "en": "2026/10/24-en.png",
+    "de": "2026/10/24-de.png"
+  },
+  "scene": "2026/10/24-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6ad9d7414187d54841a0d809",
+    "69a690193f3b94a1210e3b18": "6ad9d74181158a0b1794a37b",
+    "video-ta:69a691563f3b94a1210e3dec": "6ad9d7421ddfbd0b4bd8f99d",
+    "video-ta:69a690193f3b94a1210e3b18": "6ad9d7424187d54841a0d834",
+    "video-ta:69a0a1b04be271803d6f6787": "6ad9d743d7259dd11b140609",
+    "video-en:69a691563f3b94a1210e3dec": "6ad9d7434278e7eb700c08f8",
+    "video-en:69a690193f3b94a1210e3b18": "6ad9d7444278e7eb700c091a",
+    "video-en:69a0a1b04be271803d6f6787": "6ad9d744709d8fcbfb257c6d",
+    "video-de:69a691563f3b94a1210e3dec": "6ad9d7454278e7eb700c0953",
+    "video-de:69a690193f3b94a1210e3b18": "6ad9d74581158a0b1794a4a3",
+    "video-de:69a0a1b04be271803d6f6787": "6ad9d7461ddfbd0b4bd8faf1"
+  },
+  "videos": {
+    "ta": "2026/10/24-ta.mp4",
+    "en": "2026/10/24-en.mp4",
+    "de": "2026/10/24-de.mp4"
+  },
+  "narrated": true
+}

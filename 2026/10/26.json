@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-26",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "கலாத்தியர் 2:20",
+      "text": "கிறிஸ்துவுடனேகூடச் சிலுவையிலறையப்பட்டேன்; ஆயினும், பிழைத்திருக்கிறேன்; இனி நான் அல்ல, கிறிஸ்துவே எனக்குள் பிழைத்திருக்கிறார்; நான் இப்பொழுது மாம்சத்தில் பிழைத்திருக்கிறதோ, என்னில் அன்புகூர்ந்து எனக்காகத் தம்மைத்தாமே ஒப்புக்கொடுத்த தேவனுடைய குமாரனைப்பற்றும் விசுவாசத்தினாலே பிழைத்திருக்கிறேன்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Galatians 2:20",
+      "text": "I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me: and the life which I now live in the flesh I live by the faith of the Son of God, who loved me, and gave himself for me."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Galater 2,20",
+      "text": "Ich lebe aber; doch nun nicht ich, sondern Christus lebt in mir. Denn was ich jetzt lebe im Fleisch, das lebe ich in dem Glauben des Sohnes Gottes, der mich geliebt hat und sich selbst für mich dargegeben."
+    }
+  },
+  "topics": [
+    "faith",
+    "Savior",
+    "life",
+    "selfishness",
+    "crucifixion"
+  ],
+  "images": {
+    "ta": "2026/10/26-ta.png",
+    "en": "2026/10/26-en.png",
+    "de": "2026/10/26-de.png"
+  },
+  "scene": "2026/10/26-scene.jpg",
+  "buffer": {
+    "69a691563f3b94a1210e3dec": "6adc72c53d5b27036b75a97c",
+    "69a690193f3b94a1210e3b18": "6adc72c56887a2efc1a90e8f",
+    "video-ta:69a691563f3b94a1210e3dec": "6adc72c6bd33ce99c3137fe0",
+    "video-ta:69a690193f3b94a1210e3b18": "6adc72c68b3d437ddcaca78e",
+    "video-ta:69a0a1b04be271803d6f6787": "6adc72c68b3d437ddcaca7af",
+    "video-en:69a691563f3b94a1210e3dec": "6adc72c70b5343d070739b0e",
+    "video-en:69a690193f3b94a1210e3b18": "6adc72c73d5b27036b75a9df",
+    "video-en:69a0a1b04be271803d6f6787": "6adc72c70b5343d070739b59",
+    "video-de:69a691563f3b94a1210e3dec": "6adc72c8e4be8a4d864c3bcc",
+    "video-de:69a690193f3b94a1210e3b18": "6adc72c80b5343d070739b7a",
+    "video-de:69a0a1b04be271803d6f6787": "6adc72c8bd33ce99c3138059"
+  },
+  "videos": {
+    "ta": "2026/10/26-ta.mp4",
+    "en": "2026/10/26-en.mp4",
+    "de": "2026/10/26-de.mp4"
+  },
+  "narrated": true
+}

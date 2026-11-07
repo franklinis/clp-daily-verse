@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-09",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "2 கொரிந்தியர் 9:8",
+      "text": "மேலும், நீங்கள் எல்லாவற்றிலும் எப்பொழுதும் சம்பூரணமுடையவர்களாயும், சகலவித நற்கிரியைகளிலும் பெருகுகிறவர்களாயுமிருக்கும்படியாக, தேவன் உங்களிடத்தில் சகலவித கிருபையையும் பெருகச்செய்ய வல்லவராயிருக்கிறார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "2 Corinthians 9:8",
+      "text": "And God is able to make all grace abound toward you; that ye, always having all sufficiency in all things, may abound to every good work."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "2. Korinther 9,8",
+      "text": "Gott aber kann machen, daß allerlei Gnade unter euch reichlich sei, daß ihr in allen Dingen volle Genüge habt und reich seid zu allerlei guten Werken."
+    }
+  },
+  "topics": [
+    "blessing",
+    "worrying",
+    "goodness",
+    "work",
+    "receiving",
+    "giving"
+  ],
+  "images": {
+    "ta": "2026/11/09-ta.png",
+    "en": "2026/11/09-en.png",
+    "de": "2026/11/09-de.png"
+  },
+  "scene": "2026/11/09-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/09-ta.mp4",
+    "en": "2026/11/09-en.mp4",
+    "de": "2026/11/09-de.mp4"
+  },
+  "narrated": true
+}
