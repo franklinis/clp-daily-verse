@@ -37,5 +37,10 @@
     "en": "2026/11/09-en.mp4",
     "de": "2026/11/09-de.mp4"
   },
-  "narrated": true
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
 }
