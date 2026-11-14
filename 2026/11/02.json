@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-02",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 139:1-2",
+      "text": "கர்த்தாவே, நீர் என்னை ஆராய்ந்து, அறிந்திருக்கிறீர். என் உட்காருதலையும் என் எழுந்திருக்குதலையும் நீர் அறிந்திருக்கிறீர்; என் நினைவுகளைத் தூரத்திலிருந்து அறிகிறீர்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 139:1-2",
+      "text": "O LORD, thou hast searched me, and known me. Thou knowest my downsitting and mine uprising, thou understandest my thought afar off."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 139,1-2",
+      "text": "HERR, Du erforschest mich und kennest mich. Ich sitze oder stehe auf, so weißt du es; du verstehst meine Gedanken von ferne."
+    }
+  },
+  "topics": [
+    "seeking",
+    "thoughts",
+    "understanding"
+  ],
+  "images": {
+    "ta": "2026/11/02-ta.png",
+    "en": "2026/11/02-en.png",
+    "de": "2026/11/02-de.png"
+  },
+  "scene": "2026/11/02-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/02-ta.mp4",
+    "en": "2026/11/02-en.mp4",
+    "de": "2026/11/02-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

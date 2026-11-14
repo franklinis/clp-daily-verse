@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-10",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "ரோமர் 12:15",
+      "text": "சந்தோஷப்படுகிறவர்களுடனே சந்தோஷப்படுங்கள்; அழுகிறவர்களுடனே அழுங்கள்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Romans 12:15",
+      "text": "Rejoice with them that do rejoice, and weep with them that weep."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Römer 12,15",
+      "text": "Freut euch mit den Fröhlichen und weint mit den Weinenden."
+    }
+  },
+  "topics": [
+    "joy",
+    "compassion",
+    "sadness"
+  ],
+  "images": {
+    "ta": "2026/11/10-ta.png",
+    "en": "2026/11/10-en.png",
+    "de": "2026/11/10-de.png"
+  },
+  "scene": "2026/11/10-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/10-ta.mp4",
+    "en": "2026/11/10-en.mp4",
+    "de": "2026/11/10-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

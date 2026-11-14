@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-11",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "நீதிமொழிகள் 12:25",
+      "text": "மனுஷனுடைய இருதயத்திலுள்ள கவலை அதை ஒடுக்கும்; நல்வார்த்தையோ அதை மகிழ்ச்சியாக்கும்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Proverbs 12:25",
+      "text": "Heaviness in the heart of man maketh it stoop: but a good word maketh it glad."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Sprüche 12,25",
+      "text": "Sorge im Herzen kränkt, aber ein freundliches Wort erfreut."
+    }
+  },
+  "topics": [
+    "speaking",
+    "worrying",
+    "heart"
+  ],
+  "images": {
+    "ta": "2026/11/11-ta.png",
+    "en": "2026/11/11-en.png",
+    "de": "2026/11/11-de.png"
+  },
+  "scene": "2026/11/11-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/11-ta.mp4",
+    "en": "2026/11/11-en.mp4",
+    "de": "2026/11/11-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

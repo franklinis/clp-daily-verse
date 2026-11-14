@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-16",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யோவான் 16:28",
+      "text": "நான் பிதாவினிடத்திலிருந்து புறப்பட்டு உலகத்திலே வந்தேன்; மறுபடியும் உலகத்தைவிட்டுப் பிதாவினிடத்திற்குப் போகிறேன் என்றார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "John 16:28",
+      "text": "I came forth from the Father, and am come into the world: again, I leave the world, and go to the Father."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Johannes 16,28",
+      "text": "Ich bin vom Vater ausgegangen und gekommen in die Welt; wiederum verlasse ich die Welt und gehe zum Vater."
+    }
+  },
+  "topics": [
+    "Father",
+    "world",
+    "ascension"
+  ],
+  "images": {
+    "ta": "2026/11/16-ta.png",
+    "en": "2026/11/16-en.png",
+    "de": "2026/11/16-de.png"
+  },
+  "scene": "2026/11/16-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/16-ta.mp4",
+    "en": "2026/11/16-en.mp4",
+    "de": "2026/11/16-de.mp4"
+  },
+  "narrated": true
+}

@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-05",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "நீதிமொழிகள் 10:17",
+      "text": "புத்திமதிகளைக் காத்துக்கொள்ளுகிறவன் ஜீவவழியில் இருக்கிறான்; கண்டனையை (கண்டிப்பை) வெறுக்கிறவனோ மோசம்போகிறான்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Proverbs 10:17",
+      "text": "He is in the way of life that keepeth instruction: but he that refuseth reproof erreth."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Sprüche 10,17",
+      "text": "Die Zucht halten ist der Weg zum Leben; wer aber der Zurechtweisung nicht achtet, der bleibt in der Irre."
+    }
+  },
+  "topics": [
+    "obedience",
+    "life",
+    "listening"
+  ],
+  "images": {
+    "ta": "2026/11/05-ta.png",
+    "en": "2026/11/05-en.png",
+    "de": "2026/11/05-de.png"
+  },
+  "scene": "2026/11/05-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/05-ta.mp4",
+    "en": "2026/11/05-en.mp4",
+    "de": "2026/11/05-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

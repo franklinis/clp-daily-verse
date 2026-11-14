@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-04",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "எசேக்கியேல் 18:23",
+      "text": "துன்மார்க்கன் சாகிறது எனக்கு எவ்வளவேனும் பிரியமோ? அவன் தன் வழிகளை விட்டுத் திரும்பிப் பிழைப்பது அல்லவோ எனக்குப் பிரியம் என்று கர்த்தராகிய ஆண்டவர் சொல்லுகிறார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Ezekiel 18:23",
+      "text": "Have I any pleasure at all that the wicked should die? saith the Lord GOD: and not that he should return from his ways, and live?"
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Hesekiel 18,23",
+      "text": "Meinest du, daß ich Gefallen habe am Tode des Gottlosen, spricht der HERR, und nicht vielmehr, daß er sich bekehre von seinem Wesen und lebe?"
+    }
+  },
+  "topics": [
+    "conversion",
+    "life",
+    "death"
+  ],
+  "images": {
+    "ta": "2026/11/04-ta.png",
+    "en": "2026/11/04-en.png",
+    "de": "2026/11/04-de.png"
+  },
+  "scene": "2026/11/04-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/04-ta.mp4",
+    "en": "2026/11/04-en.mp4",
+    "de": "2026/11/04-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

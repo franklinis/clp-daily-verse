@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-13",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "1 தெசலோனிக்கேயர் 5:24",
+      "text": "உங்களை அழைக்கிறவர் உண்மையுள்ளவர், அவர் அப்படியே செய்வார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "1 Thessalonians 5:24",
+      "text": "Faithful is he that calleth you, who also will do it."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "1. Thessalonicher 5,24",
+      "text": "Getreu ist er, der euch ruft; er wird's auch tun."
+    }
+  },
+  "topics": [
+    "calling",
+    "faithfulness",
+    "Word of God",
+    "promises",
+    "reliability"
+  ],
+  "images": {
+    "ta": "2026/11/13-ta.png",
+    "en": "2026/11/13-en.png",
+    "de": "2026/11/13-de.png"
+  },
+  "scene": "2026/11/13-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/13-ta.mp4",
+    "en": "2026/11/13-en.mp4",
+    "de": "2026/11/13-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}
