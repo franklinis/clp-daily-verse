@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-17",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "பிரசங்கி 3:1",
+      "text": "ஒவ்வொன்றிற்கும் ஒவ்வொரு காலமுண்டு; வானத்தின் கீழிருக்கிற ஒவ்வொரு காரியத்துக்கும் ஒவ்வொரு சமயமுண்டு."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Ecclesiastes 3:1",
+      "text": "To every thing there is a season, and a time to every purpose under the heaven."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Prediger 3,1",
+      "text": "Ein jegliches hat seine Zeit, und alles Vornehmen unter dem Himmel hat seine Stunde."
+    }
+  },
+  "topics": [
+    "planning",
+    "life",
+    "heaven"
+  ],
+  "images": {
+    "ta": "2026/11/17-ta.png",
+    "en": "2026/11/17-en.png",
+    "de": "2026/11/17-de.png"
+  },
+  "scene": "2026/11/17-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/17-ta.mp4",
+    "en": "2026/11/17-en.mp4",
+    "de": "2026/11/17-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

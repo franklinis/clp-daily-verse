@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-06",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யாக்கோபு 5:16",
+      "text": "நீங்கள் சொஸ்தமடையும்படிக்கு, உங்கள் குற்றங்களை ஒருவருக்கொருவர் அறிக்கையிட்டு, ஒருவருக்காக ஒருவர் ஜெபம்பண்ணுங்கள். நீதிமான் செய்யும் ஊக்கமான வேண்டுதல் மிகவும் பெலனுள்ளதாயிருக்கிறது."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "James 5:16",
+      "text": "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Jakobus 5,16",
+      "text": "Bekenne einer dem andern seine Sünden und betet füreinander, daß ihr gesund werdet. Des Gerechten Gebet vermag viel, wenn es ernstlich ist."
+    }
+  },
+  "topics": [
+    "righteousness",
+    "healing",
+    "prayer",
+    "sickness",
+    "confession"
+  ],
+  "images": {
+    "ta": "2026/11/06-ta.png",
+    "en": "2026/11/06-en.png",
+    "de": "2026/11/06-de.png"
+  },
+  "scene": "2026/11/06-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/06-ta.mp4",
+    "en": "2026/11/06-en.mp4",
+    "de": "2026/11/06-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

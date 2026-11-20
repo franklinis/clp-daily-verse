@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-12",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "புலம்பல் 3:40",
+      "text": "நாம் நம்முடைய வழிகளைச் சோதித்து ஆராய்ந்து, கர்த்தரிடத்தில் திரும்பக்கடவோம்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Lamentations 3:40",
+      "text": "Let us search and try our ways, and turn again to the LORD."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Klagelieder 3,40",
+      "text": "Und laßt uns erforschen und prüfen unser Wesen und uns zum HERRN bekehren!"
+    }
+  },
+  "topics": [
+    "conversion",
+    "repentance",
+    "life"
+  ],
+  "images": {
+    "ta": "2026/11/12-ta.png",
+    "en": "2026/11/12-en.png",
+    "de": "2026/11/12-de.png"
+  },
+  "scene": "2026/11/12-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/12-ta.mp4",
+    "en": "2026/11/12-en.mp4",
+    "de": "2026/11/12-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

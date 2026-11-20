@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-07",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யோவான் 12:26",
+      "text": "ஒருவன் எனக்கு ஊழியஞ்செய்கிறவனானால் என்னைப் பின்பற்றக்கடவன், நான் எங்கே இருக்கிறேனோ அங்கே என் ஊழியக்காரனும் இருப்பான்; ஒருவன் எனக்கு ஊழியஞ்செய்தால் அவனைப் பிதாவானவர் கனம்பண்ணுவார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "John 12:26",
+      "text": "If any man serve me, let him follow me; and where I am, there shall also my servant be: if any man serve me, him will my Father honour."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Johannes 12,26",
+      "text": "Wer mir dienen will, der folge mir nach; und wo ich bin, da soll mein Diener auch sein. Und wer mir dienen wird, den wird mein Vater ehren."
+    }
+  },
+  "topics": [
+    "serving",
+    "following",
+    "Father",
+    "Jesus"
+  ],
+  "images": {
+    "ta": "2026/11/07-ta.png",
+    "en": "2026/11/07-en.png",
+    "de": "2026/11/07-de.png"
+  },
+  "scene": "2026/11/07-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/07-ta.mp4",
+    "en": "2026/11/07-en.mp4",
+    "de": "2026/11/07-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}
