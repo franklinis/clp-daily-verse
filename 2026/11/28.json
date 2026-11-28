@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-28",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "பிலிப்பியர் 2:3",
+      "text": "ஒன்றையும் வாதினாலாவது வீண்பெருமையினாலாவது செய்யாமல், மனத்தாழ்மையினாலே ஒருவரையொருவர் தங்களிலும் மேன்மையானவர்களாக எண்ணக்கடவீர்கள்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Philippians 2:3",
+      "text": "Let nothing be done through strife or vainglory; but in lowliness of mind let each esteem other better than themselves."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Philipper 2,3",
+      "text": "Nichts tut durch Zank oder eitle Ehre; sondern durch Demut achte einer den andern höher denn sich selbst."
+    }
+  },
+  "topics": [
+    "selfishness",
+    "humility",
+    "neighbor"
+  ],
+  "images": {
+    "ta": "2026/11/28-ta.png",
+    "en": "2026/11/28-en.png",
+    "de": "2026/11/28-de.png"
+  },
+  "scene": "2026/11/28-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/28-ta.mp4",
+    "en": "2026/11/28-en.mp4",
+    "de": "2026/11/28-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

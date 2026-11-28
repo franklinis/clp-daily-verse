@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-21",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யோசுவா 1:9",
+      "text": "நான் உனக்குக் கட்டளையிடவில்லையா? பலங்கொண்டு திடமனதாயிரு; திகையாதே, கலங்காதே, நீ போகும் இடமெல்லாம் உன் தேவனாகிய கர்த்தர் உன்னோடே இருக்கிறார் என்றார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Joshua 1:9",
+      "text": "Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Josua 1,9",
+      "text": "Siehe, ich habe dir geboten, daß du getrost und freudig seist. Laß dir nicht grauen und entsetze dich nicht; denn der HERR, dein Gott, ist mit dir in allem, was du tun wirst."
+    }
+  },
+  "topics": [
+    "God",
+    "fear",
+    "encouragement",
+    "courage"
+  ],
+  "images": {
+    "ta": "2026/11/21-ta.png",
+    "en": "2026/11/21-en.png",
+    "de": "2026/11/21-de.png"
+  },
+  "scene": "2026/11/21-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/21-ta.mp4",
+    "en": "2026/11/21-en.mp4",
+    "de": "2026/11/21-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

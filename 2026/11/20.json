@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-20",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 34:1",
+      "text": "கர்த்தரை நான் எக்காலத்திலும் ஸ்தோத்திரிப்பேன்; அவர் துதி எப்போதும் என் வாயிலிருக்கும்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 34:1",
+      "text": "I will bless the LORD at all times: his praise shall continually be in my mouth."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 34,1",
+      "text": "Ich will den HERRN loben allezeit; sein Lob soll immerdar in meinem Munde sein."
+    }
+  },
+  "topics": [
+    "worship",
+    "blessing",
+    "speaking",
+    "praise"
+  ],
+  "images": {
+    "ta": "2026/11/20-ta.png",
+    "en": "2026/11/20-en.png",
+    "de": "2026/11/20-de.png"
+  },
+  "scene": "2026/11/20-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/20-ta.mp4",
+    "en": "2026/11/20-en.mp4",
+    "de": "2026/11/20-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

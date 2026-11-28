@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-27",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "மத்தேயு 6:21",
+      "text": "உங்கள் பொக்கிஷம் எங்கேயிருக்கிறதோ அங்கே உங்கள் இருதயமும் இருக்கும்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Matthew 6:21",
+      "text": "For where your treasure is, there will your heart be also."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Matthäus 6,21",
+      "text": "Denn wo euer Schatz ist, da ist auch euer Herz."
+    }
+  },
+  "topics": [
+    "materialism",
+    "money",
+    "heart",
+    "desires"
+  ],
+  "images": {
+    "ta": "2026/11/27-ta.png",
+    "en": "2026/11/27-en.png",
+    "de": "2026/11/27-de.png"
+  },
+  "scene": "2026/11/27-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/27-ta.mp4",
+    "en": "2026/11/27-en.mp4",
+    "de": "2026/11/27-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

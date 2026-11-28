@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-26",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 50:23",
+      "text": "ஸ்தோத்திர பலியிடுகிறவன் என்னை மகிமைப்படுத்துகிறான்; தன் வழியைச் செவ்வைப்படுத்துகிறவனுக்கு தேவனுடைய இரட்சிப்பை வெளிப்படுத்துவேன் என்று சொல்லுகிறார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 50:23",
+      "text": "Whoso offereth praise glorifieth me: and to him that ordereth his conversation aright will I shew the salvation of God."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 50,23",
+      "text": "Wer Dank opfert, der preiset mich; und da ist der Weg, daß ich ihm zeige das Heil Gottes."
+    }
+  },
+  "topics": [
+    "sacrifice",
+    "gratitude",
+    "blameless",
+    "salvation"
+  ],
+  "images": {
+    "ta": "2026/11/26-ta.png",
+    "en": "2026/11/26-en.png",
+    "de": "2026/11/26-de.png"
+  },
+  "scene": "2026/11/26-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/26-ta.mp4",
+    "en": "2026/11/26-en.mp4",
+    "de": "2026/11/26-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

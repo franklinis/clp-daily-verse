@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-30",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "2 கொரிந்தியர் 9:6",
+      "text": "பின்னும் நான் சொல்லுகிறதென்னவெனில், சிறுக விதைக்கிறவன் சிறுக அறுப்பான், பெருக விதைக்கிறவன் பெருக அறுப்பான்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "2 Corinthians 9:6",
+      "text": "But this I say, He which soweth sparingly shall reap also sparingly; and he which soweth bountifully shall reap also bountifully."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "2. Korinther 9,6",
+      "text": "Ich meine aber das: Wer da kärglich sät, der wird auch kärglich ernten; und wer da sät im Segen, der wird auch ernten im Segen."
+    }
+  },
+  "topics": [
+    "giving",
+    "harvest",
+    "generosity"
+  ],
+  "images": {
+    "ta": "2026/11/30-ta.png",
+    "en": "2026/11/30-en.png",
+    "de": "2026/11/30-de.png"
+  },
+  "scene": "2026/11/30-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/30-ta.mp4",
+    "en": "2026/11/30-en.mp4",
+    "de": "2026/11/30-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-24",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "1 யோவான் 2:28",
+      "text": "இப்படியிருக்க, பிள்ளைகளே, அவர் வெளிப்படும்போது நாம் அவர் வருகையில் அவருக்கு முன்பாக வெட்கப்பட்டுப்போகாமல் தைரியமுள்ளவர்களாயிருக்கும்படிக்கு அவரில் நிலைத்திருங்கள்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "1 John 2:28",
+      "text": "And now, little children, abide in him; that, when he shall appear, we may have confidence, and not be ashamed before him at his coming."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "1. Johannes 2,28",
+      "text": "Und nun, Kindlein, bleibet bei ihm, auf daß, wenn er offenbart wird, wir Freudigkeit haben und nicht zu Schanden werden vor ihm bei seiner Zukunft."
+    }
+  },
+  "topics": [
+    "trust",
+    "second coming",
+    "end times"
+  ],
+  "images": {
+    "ta": "2026/11/24-ta.png",
+    "en": "2026/11/24-en.png",
+    "de": "2026/11/24-de.png"
+  },
+  "scene": "2026/11/24-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/24-ta.mp4",
+    "en": "2026/11/24-en.mp4",
+    "de": "2026/11/24-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

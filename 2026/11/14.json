@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-14",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "சங்கீதம் 121:3",
+      "text": "உன் காலைத் தள்ளாடவொட்டார்; உன்னைக் காக்கிறவர் உறங்கார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Psalm 121:3",
+      "text": "He will not suffer thy foot to be moved: he that keepeth thee will not slumber."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Psalm 121,3",
+      "text": "Er wird deinen Fuß nicht gleiten lassen; und der dich behütet schläft nicht."
+    }
+  },
+  "topics": [
+    "trust",
+    "reliability",
+    "dependence"
+  ],
+  "images": {
+    "ta": "2026/11/14-ta.png",
+    "en": "2026/11/14-en.png",
+    "de": "2026/11/14-de.png"
+  },
+  "scene": "2026/11/14-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/14-ta.mp4",
+    "en": "2026/11/14-en.mp4",
+    "de": "2026/11/14-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

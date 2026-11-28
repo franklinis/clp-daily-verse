@@ -1,0 +1,15 @@
+{
+  "name": "Daily Verse · Christ the Living Petra",
+  "short_name": "Daily Verse",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#173f37",
+  "theme_color": "#205b4f",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

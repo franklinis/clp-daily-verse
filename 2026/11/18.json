@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-18",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "1 தெசலோனிக்கேயர் 5:16-18",
+      "text": "எப்பொழுதும் சந்தோஷமாயிருங்கள். இடைவிடாமல் ஜெபம்பண்ணுங்கள். எல்லாவற்றிலேயும் ஸ்தோத்திரஞ்செய்யுங்கள்; அப்படிச் செய்வதே கிறிஸ்து இயேசுவுக்குள் உங்களைக்குறித்து தேவனுடைய சித்தமாயிருக்கிறது."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "1 Thessalonians 5:16-18",
+      "text": "Rejoice evermore. Pray without ceasing. In every thing give thanks: for this is the will of God in Christ Jesus concerning you."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "1. Thessalonicher 5,16-18",
+      "text": "Seid allezeit fröhlich, betet ohne Unterlaß, seid dankbar in allen Dingen; denn das ist der Wille Gottes in Christo Jesu an euch."
+    }
+  },
+  "topics": [
+    "joy",
+    "gratitude",
+    "prayer"
+  ],
+  "images": {
+    "ta": "2026/11/18-ta.png",
+    "en": "2026/11/18-en.png",
+    "de": "2026/11/18-de.png"
+  },
+  "scene": "2026/11/18-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/18-ta.mp4",
+    "en": "2026/11/18-en.mp4",
+    "de": "2026/11/18-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

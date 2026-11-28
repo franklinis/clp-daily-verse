@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-19",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "2 கொரிந்தியர் 1:5",
+      "text": "எப்படியெனில், கிறிஸ்துவினுடைய பாடுகள் எங்களிடத்தில் பெருகுகிறதுபோல, கிறிஸ்துவினாலே எங்களுக்கு ஆறுதலும் பெருகுகிறது."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "2 Corinthians 1:5",
+      "text": "For as the sufferings of Christ abound in us, so our consolation also aboundeth by Christ."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "2. Korinther 1,5",
+      "text": "Denn gleichwie wir des Leidens Christi viel haben, also werden wir auch reichlich getröstet durch Christum."
+    }
+  },
+  "topics": [
+    "suffering",
+    "comforter",
+    "Jesus",
+    "encouragement"
+  ],
+  "images": {
+    "ta": "2026/11/19-ta.png",
+    "en": "2026/11/19-en.png",
+    "de": "2026/11/19-de.png"
+  },
+  "scene": "2026/11/19-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/19-ta.mp4",
+    "en": "2026/11/19-en.mp4",
+    "de": "2026/11/19-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": false
+  },
+  "refresh": false
+}

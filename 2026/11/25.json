@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-25",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "யோவான் 3:21",
+      "text": "சத்தியத்தின்படி செய்கிறவனோ, தன் கிரியைகள் தேவனுக்குள்ளாய்ச் செய்யப்படுகிறதென்று வெளியாகும்படிக்கு, ஒளியினிடத்தில் வருகிறான் என்றார்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "John 3:21",
+      "text": "But he that doeth truth cometh to the light, that his deeds may be made manifest, that they are wrought in God."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Johannes 3,21",
+      "text": "Wer aber die Wahrheit tut, der kommt an das Licht, daß seine Werke offenbar werden; denn sie sind in Gott getan."
+    }
+  },
+  "topics": [
+    "light",
+    "truth",
+    "obedience",
+    "life"
+  ],
+  "images": {
+    "ta": "2026/11/25-ta.png",
+    "en": "2026/11/25-en.png",
+    "de": "2026/11/25-de.png"
+  },
+  "scene": "2026/11/25-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/25-ta.mp4",
+    "en": "2026/11/25-en.mp4",
+    "de": "2026/11/25-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}

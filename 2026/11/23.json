@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-23",
+  "verses": {
+    "ta": {
+      "lang": "ta",
+      "reference": "ஏசாயா 26:3",
+      "text": "உம்மை உறுதியாய்ப் பற்றிக்கொண்ட மனதையுடையவன் உம்மையே நம்பியிருக்கிறபடியால், நீர் அவனைப் பூரண சமாதானத்துடன் காத்துக்கொள்வீர்."
+    },
+    "en": {
+      "lang": "en",
+      "reference": "Isaiah 26:3",
+      "text": "Thou wilt keep him in perfect peace, whose mind is stayed on thee: because he trusteth in thee."
+    },
+    "de": {
+      "lang": "de",
+      "reference": "Jesaja 26,3",
+      "text": "Du erhältst stets Frieden nach gewisser Zusage; denn man verläßt sich auf dich."
+    }
+  },
+  "topics": [
+    "trust",
+    "safety",
+    "peace"
+  ],
+  "images": {
+    "ta": "2026/11/23-ta.png",
+    "en": "2026/11/23-en.png",
+    "de": "2026/11/23-de.png"
+  },
+  "scene": "2026/11/23-scene.jpg",
+  "buffer": {},
+  "videos": {
+    "ta": "2026/11/23-ta.mp4",
+    "en": "2026/11/23-en.mp4",
+    "de": "2026/11/23-de.mp4"
+  },
+  "narrated": true,
+  "app": {
+    "posts": 11,
+    "approved": true
+  },
+  "refresh": false
+}
